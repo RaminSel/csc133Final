@@ -214,6 +214,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
 
+
             // Draw some text while paused
             if(mPaused){
 
@@ -258,6 +259,18 @@ class SnakeGame extends SurfaceView implements Runnable{
         return true;
     }
 
+    public void togForPause() {
+        mPaused = !mPaused;
+
+        if (!mPaused) {
+            mNextFrameTime = System.currentTimeMillis();
+        }
+
+    }
+
+    public boolean ismPaused() {
+        return mPaused;
+    }
 
     // Stop the thread
     public void pause() {
