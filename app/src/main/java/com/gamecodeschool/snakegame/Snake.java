@@ -164,6 +164,18 @@ class Snake {
 
     }
 
+    // overload move method
+    
+    /**
+     * Moves the snake in the specified direction.
+     *
+     * @param newHeading the new heading direction for the snake
+     */
+    void move(Heading newHeading) {
+        this.heading = newHeading;
+        move();
+    }
+
     boolean detectDeath() {
         // Has the snake died?
         boolean dead = false;

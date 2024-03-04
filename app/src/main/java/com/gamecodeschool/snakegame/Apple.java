@@ -47,6 +47,23 @@ class Apple {
         location.y = random.nextInt(mSpawnRange.y - 1) + 1;
     }
 
+    /*
+    overload method
+    if score is above 5, make apple smaller, making it harder for the user.
+     */
+    void spawn(int score) {
+        spawn();
+        if (score > 5) {
+            int newSize = mSize - 10;
+
+            mSize = Math.max(newSize, 5);
+
+            mBitmapApple = Bitmap.createScaledBitmap(mBitmapApple, mSize, mSize, false);
+
+        }
+
+    }
+
     // Let SnakeGame know where the apple is
     // SnakeGame can share this with the snake
     Point getLocation(){

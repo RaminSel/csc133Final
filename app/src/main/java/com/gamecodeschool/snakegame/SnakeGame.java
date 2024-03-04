@@ -214,9 +214,16 @@ class SnakeGame extends SurfaceView implements Runnable{
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
 
+            Paint name = new Paint();
+            name.setColor(Color.YELLOW);
+            name.setTextSize(75);
+            name.setTextAlign(Paint.Align.RIGHT);
+
+            mCanvas.drawText("Ramin & Parsa",2900, 120, name);
+
 
             // Draw some text while paused
-            if(mPaused){
+            if(mPaused) {
 
                 // Set the size and color of the mPaint for the text
                 mPaint.setColor(Color.argb(255, 255, 255, 255));
@@ -230,10 +237,10 @@ class SnakeGame extends SurfaceView implements Runnable{
                         200, 700, mPaint);
             }
 
-
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
+
     }
 
     @Override
