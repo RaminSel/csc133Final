@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import java.util.Random;
 
-class Apple implements GameObject {
+public class Apple extends GameObject implements Updateable {
 
     // The location of the apple on the grid
     // Not in pixels
@@ -83,6 +83,8 @@ class Apple implements GameObject {
 
     }
 
+ //   @Override
+            //public void move() {
 
-
+   // }
 }

@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
-class Snake implements GameObject {
+class Snake extends GameObject implements Movable, Updateable {
 
     // The location in the grid of all the segments
     private ArrayList<Point> segmentLocations;
@@ -127,7 +127,7 @@ class Snake implements GameObject {
     }
 
 
-    void move() {
+    public void move() {
         // Move the body
         // Start at the back and move it
         // to the position of the segment in front of it
