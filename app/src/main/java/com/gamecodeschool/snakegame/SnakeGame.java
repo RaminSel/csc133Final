@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 class SnakeGame extends SurfaceView implements Runnable{
 
@@ -25,6 +27,9 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Is the game currently playing and or paused?
     private volatile boolean mPlaying = false;
     private volatile boolean mPaused = true;
+
+
+    List<GameObject> gameObjects = new ArrayList<>();
 
     // for playing sound effects
     private SoundPool mSP;
@@ -54,10 +59,18 @@ class SnakeGame extends SurfaceView implements Runnable{
     public SnakeGame(Context context, Point size) {
         super(context);
 
+        gameObjects = new ArrayList<>();
+
         // Work out how many pixels each block is
         int blockSize = size.x / NUM_BLOCKS_WIDE;
         // How many blocks of the same size will fit into the height
         mNumBlocksHigh = size.y / blockSize;
+
+        mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+        mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+
+        gameObjects.add(mSnake);
+        gameObjects.add(mApple);
 
         // Initialize the SoundPool
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -166,7 +179,13 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // Update all the game objects
     public void update() {
-
+        for (GameObject object : gameObjects) {
+            String i = null;
+            System.out.println("Index: " + i + ", Object: " + object);
+            if (object != null) {
+                object.update();
+            }
+        }
         // Move the snake
         mSnake.move();
 
