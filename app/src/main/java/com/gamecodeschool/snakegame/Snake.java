@@ -311,7 +311,6 @@ class Snake implements GameObject {
         }
     }
 
-
     @Override
     public void update() {
 
