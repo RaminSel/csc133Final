@@ -9,12 +9,12 @@ import android.os.Build;
 import java.io.IOException;
 import android.media.AudioManager;
 
-public class SoundManager {
+public class ManageSound {
     private SoundPool soundPool;
     private int eatSoundId = -1;
     private int crashSoundId = -1;
 
-    public SoundManager(Context context) {
+    public ManageSound(Context context) {
         initializeSoundPool(context);
         loadSounds(context);
     }

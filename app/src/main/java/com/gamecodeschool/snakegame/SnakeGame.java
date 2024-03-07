@@ -53,7 +53,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     // And an apple
     private Apple mApple;
 
-    private SoundManager soundManager;
+    private ManageSound soundManager;
 
     // This is the constructor method that gets called
     // from SnakeActivity
@@ -62,9 +62,8 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         initializeGameArea(size);
         initializeGameObjects(context, size);
-        //initializeSoundPool(context);
         initializeDrawingObjects();
-        soundManager = new SoundManager(context);
+        soundManager = new ManageSound(context);
     }
 
     private void initializeGameArea(Point size) {
@@ -111,11 +110,9 @@ class SnakeGame extends SurfaceView implements Runnable{
                     update();
                 }
             }
-
             draw();
         }
     }
-
 
     // Check to see if it is time for an update
     public boolean updateRequired() {
@@ -186,27 +183,18 @@ class SnakeGame extends SurfaceView implements Runnable{
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
 
+            RenderGame renderer = new RenderGame(mCanvas, mPaint);
             // Fill the screen with a color
-            mCanvas.drawColor(Color.argb(255, 110, 225, 120));
-
-            // Set the size and color of the mPaint for the text
-            mPaint.setColor(Color.argb(255, 255, 255, 255));
-            mPaint.setTextSize(120);
-
-            // Draw the score
-            mCanvas.drawText("" + mScore, 20, 120, mPaint);
+            renderer.drawBackground(Color.argb(255, 26, 128, 182));
+            renderer.drawScore(mScore);
+            renderer.drawGameObjects(gameObjects);
 
             // Draw the apple and the snake
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
 
-            Paint name = new Paint();
-            name.setColor(Color.YELLOW);
-            name.setTextSize(75);
-            name.setTextAlign(Paint.Align.RIGHT);
-
-            mCanvas.drawText("Ramin & Parsa",2900, 120, name);
-
+            // name
+            renderer.drawCustomText("Ramin & Parsa", 2900, 120, Color.BLACK, 75, Paint.Align.RIGHT);
 
             // Draw some text while paused
             if(mPaused) {
@@ -214,10 +202,8 @@ class SnakeGame extends SurfaceView implements Runnable{
                 // Set the size and color of the mPaint for the text
                 mPaint.setColor(Color.argb(255, 255, 255, 255));
                 mPaint.setTextSize(250);
-
                 // Draw the message
                 // We will give this an international upgrade soon
-                //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
                 mCanvas.drawText(getResources().
                                 getString(R.string.tap_to_play),
                         200, 700, mPaint);
