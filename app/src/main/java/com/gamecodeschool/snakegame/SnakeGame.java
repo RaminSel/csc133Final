@@ -53,84 +53,49 @@ class SnakeGame extends SurfaceView implements Runnable{
     // And an apple
     private Apple mApple;
 
+    private SoundManager soundManager;
 
     // This is the constructor method that gets called
     // from SnakeActivity
     public SnakeGame(Context context, Point size) {
         super(context);
 
-        gameObjects = new ArrayList<>();
+        initializeGameArea(size);
+        initializeGameObjects(context, size);
+        //initializeSoundPool(context);
+        initializeDrawingObjects();
+        soundManager = new SoundManager(context);
+    }
 
-        // Work out how many pixels each block is
+    private void initializeGameArea(Point size) {
         int blockSize = size.x / NUM_BLOCKS_WIDE;
-        // How many blocks of the same size will fit into the height
         mNumBlocksHigh = size.y / blockSize;
+    }
 
+    private void initializeGameObjects(Context context, Point size) {
+        int blockSize = size.x / NUM_BLOCKS_WIDE;
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
-
         gameObjects.add(mSnake);
         gameObjects.add(mApple);
+    }
 
-        // Initialize the SoundPool
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
 
-            mSP = new SoundPool.Builder()
-                    .setMaxStreams(5)
-                    .setAudioAttributes(audioAttributes)
-                    .build();
-        } else {
-            mSP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        }
-        try {
-            AssetManager assetManager = context.getAssets();
-            AssetFileDescriptor descriptor;
-
-            // Prepare the sounds in memory
-            descriptor = assetManager.openFd("get_apple.ogg");
-            mEat_ID = mSP.load(descriptor, 0);
-
-            descriptor = assetManager.openFd("snake_death.ogg");
-            mCrashID = mSP.load(descriptor, 0);
-
-        } catch (IOException e) {
-            // Error
-        }
-
-        // Initialize the drawing objects
+    private void initializeDrawingObjects() {
         mSurfaceHolder = getHolder();
         mPaint = new Paint();
-
-        // Call the constructors of our two game objects
-        mApple = new Apple(context,
-                new Point(NUM_BLOCKS_WIDE,
-                        mNumBlocksHigh),
-                blockSize);
-
-        mSnake = new Snake(context,
-                new Point(NUM_BLOCKS_WIDE,
-                        mNumBlocksHigh),
-                blockSize);
-
     }
+
 
 
     // Called to start a new game
     public void newGame() {
-
         // reset the snake
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
-
         // Get the apple ready for dinner
         mApple.spawn();
-
         // Reset the mScore
         mScore = 0;
-
         // Setup mNextFrameTime so an update can triggered
         mNextFrameTime = System.currentTimeMillis();
     }
@@ -156,7 +121,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     public boolean updateRequired() {
 
         // Run at 10 frames per second
-        final long TARGET_FPS = 10;
+        final long TARGET_FPS = 8;
         // There are 1000 milliseconds in a second
         final long MILLIS_PER_SECOND = 1000;
 
@@ -199,13 +164,15 @@ class SnakeGame extends SurfaceView implements Runnable{
             mScore = mScore + 1;
 
             // Play a sound
-            mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+            //mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+            soundManager.playEatSound();
         }
 
         // Did the snake die?
         if (mSnake.detectDeath()) {
             // Pause the game ready to start again
-            mSP.play(mCrashID, 1, 1, 0, 0, 1);
+            //mSP.play(mCrashID, 1, 1, 0, 0, 1);
+            soundManager.playCrashSound();
 
             mPaused =true;
         }

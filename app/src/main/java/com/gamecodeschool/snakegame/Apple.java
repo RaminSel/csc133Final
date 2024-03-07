@@ -83,8 +83,4 @@ public class Apple extends GameObject implements Updateable {
 
     }
 
- //   @Override
-            //public void move() {
-
-   // }
 }
