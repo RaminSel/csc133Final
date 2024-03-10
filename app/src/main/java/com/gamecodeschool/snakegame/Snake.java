@@ -206,12 +206,7 @@ class Snake extends GameObject implements Movable, Updateable {
         //if (snakeXs[0] == l.x && snakeYs[0] == l.y) {
         if (segmentLocations.get(0).x == l.x &&
                 segmentLocations.get(0).y == l.y) {
-
-            // Add a new Point to the list
-            // located off-screen.
-            // This is OK because on the next call to
-            // move it will take the position of
-            // the segment in front of it
+            // Add a new Point to the lis located off-screen. move it will take the position
             segmentLocations.add(new Point(-10, -10));
             return true;
         }

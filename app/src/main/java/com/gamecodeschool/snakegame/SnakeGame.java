@@ -153,29 +153,19 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         // Did the head of the snake eat the apple?
         if(mSnake.checkDinner(mApple.getLocation())){
-            // This reminds me of Edge of Tomorrow.
-            // One day the apple will be ready!
             mApple.spawn();
-
             // Add to  mScore
             mScore = mScore + 1;
-
             // Play a sound
-            //mSP.play(mEat_ID, 1, 1, 0, 0, 1);
             soundManager.playEatSound();
         }
 
-        // Did the snake die?
+        // snake dead, pause game
         if (mSnake.detectDeath()) {
-            // Pause the game ready to start again
-            //mSP.play(mCrashID, 1, 1, 0, 0, 1);
             soundManager.playCrashSound();
-
             mPaused =true;
         }
-
     }
-
 
     // Do all the drawing
     public void draw() {
@@ -192,26 +182,30 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Draw the apple and the snake
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
-
             // name
             renderer.drawCustomText("Ramin & Parsa", 2900, 120, Color.BLACK, 75, Paint.Align.RIGHT);
 
             // Draw some text while paused
             if(mPaused) {
-
-                // Set the size and color of the mPaint for the text
-                mPaint.setColor(Color.argb(255, 255, 255, 255));
-                mPaint.setTextSize(250);
-                // Draw the message
-                // We will give this an international upgrade soon
-                mCanvas.drawText(getResources().
-                                getString(R.string.tap_to_play),
-                        200, 700, mPaint);
+                PauseDraw();
             }
 
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
+
+    }
+
+    public void PauseDraw() {
+
+        // Set the size and color of the mPaint for the text
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(250);
+        // Draw the message
+        // We will give this an international upgrade soon
+        mCanvas.drawText(getResources().
+                        getString(R.string.tap_to_play),
+                200, 700, mPaint);
 
     }
 
@@ -222,8 +216,6 @@ class SnakeGame extends SurfaceView implements Runnable{
                 if (mPaused) {
                     mPaused = false;
                     newGame();
-
-                    // Don't want to process snake direction for this tap
                     return true;
                 }
 
@@ -233,7 +225,6 @@ class SnakeGame extends SurfaceView implements Runnable{
 
             default:
                 break;
-
         }
         return true;
     }

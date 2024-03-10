@@ -27,9 +27,7 @@ public class Apple extends GameObject implements Updateable {
 
         // Make a note of the passed in spawn range
         mSpawnRange = sr;
-        // Make a note of the size of an apple
         mSize = s;
-        // Hide the apple off-screen until the game starts
         location.x = -10;
 
         // Load the image to the bitmap

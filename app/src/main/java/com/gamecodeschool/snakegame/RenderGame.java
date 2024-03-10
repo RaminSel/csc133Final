@@ -1,8 +1,5 @@
 package com.gamecodeschool.snakegame;
 
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
