@@ -10,21 +10,15 @@ import java.util.Random;
 
 public class Apple extends GameObject implements Updateable {
 
-    // The location of the apple on the grid
-    // Not in pixels
+    private static final int MIN_SIZE = 5;
+    private static final int SIZE_DECREMENT = 10;
+    private static final int SCORE_THRESHOLD = 5;
     private Point location = new Point();
-
-    // The range of values we can choose from
-    // to spawn an apple
     private Point mSpawnRange;
     private int mSize;
-
-    // An image to represent the apple
     private Bitmap mBitmapApple;
 
-    /// Set up the apple in the constructor
-    Apple(Context context, Point sr, int s){
-
+    public Apple(Context context, Point sr, int s) {
         // Make a note of the passed in spawn range
         mSpawnRange = sr;
         mSize = s;
@@ -33,52 +27,44 @@ public class Apple extends GameObject implements Updateable {
         // Load the image to the bitmap
         mBitmapApple = BitmapFactory.decodeResource(context.getResources(), R.drawable.apple);
 
-        // Resize the bitmap
-        mBitmapApple = Bitmap.createScaledBitmap(mBitmapApple, s, s, false);
+        // Resize the bitmap to the specified size
+        resizeBitmap(mSize);
     }
 
     // This is called every time an apple is eaten
-    void spawn(){
-        // Choose two random values and place the apple
+    public void spawn() {
         Random random = new Random();
+        // Choose two random values within the spawn range and place the apple
         location.x = random.nextInt(mSpawnRange.x) + 1;
         location.y = random.nextInt(mSpawnRange.y - 1) + 1;
     }
 
-    /*
-    overload method
-    if score is above 5, make apple smaller, making it harder for the user.
-     */
-    void spawn(int score) {
+    // Overloaded method to spawn the apple based on the current score
+    public void spawn(int score) {
         spawn();
-        if (score > 5) {
-            int newSize = mSize - 10;
-
-            mSize = Math.max(newSize, 5);
-
-            mBitmapApple = Bitmap.createScaledBitmap(mBitmapApple, mSize, mSize, false);
-
+        if (score > SCORE_THRESHOLD) {
+            int newSize = mSize - SIZE_DECREMENT;
+            mSize = Math.max(newSize, MIN_SIZE);
+            resizeBitmap(mSize);
         }
-
     }
 
-    // Let SnakeGame know where the apple is
-    // SnakeGame can share this with the snake
-    Point getLocation(){
+    // Method to resize the apple's bitmap
+    private void resizeBitmap(int size) {
+        mBitmapApple = Bitmap.createScaledBitmap(mBitmapApple, size, size, false);
+    }
+
+    public Point getLocation() {
         return location;
     }
 
-    // draw apple
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        canvas.drawBitmap(mBitmapApple,
-                location.x * mSize, location.y * mSize, paint);
+        canvas.drawBitmap(mBitmapApple, location.x * mSize, location.y * mSize, paint);
     }
-
 
     @Override
     public void update() {
 
     }
-
 }
