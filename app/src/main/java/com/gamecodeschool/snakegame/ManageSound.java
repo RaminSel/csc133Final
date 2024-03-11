@@ -8,6 +8,7 @@ import android.media.SoundPool;
 import android.os.Build;
 import java.io.IOException;
 import android.media.AudioManager;
+import android.util.Log;
 
 public class ManageSound {
     private SoundPool soundPool;
@@ -43,7 +44,7 @@ public class ManageSound {
             descriptor = assetManager.openFd("snake_death.ogg");
             crashSoundId = soundPool.load(descriptor, 0);
         } catch (IOException e) {
-            // Handle error
+            Log.e("ManageSound", "Error loading sound assets", e);
         }
     }
 
