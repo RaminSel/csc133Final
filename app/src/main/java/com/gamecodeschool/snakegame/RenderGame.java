@@ -8,10 +8,17 @@ import java.util.List;
 public class RenderGame {
     private Canvas canvas;
     private Paint paint;
+    private Paint textPaint;
+
+    // Constants for readability and easier maintenance
+    private static final int SCORE_TEXT_SIZE = 120;
+    private static final int SCORE_X_POSITION = 20;
+    private static final int SCORE_Y_POSITION = 120;
 
     public RenderGame(Canvas canvas, Paint paint) {
         this.canvas = canvas;
         this.paint = paint;
+        this.textPaint = new Paint(paint);
     }
 
     public void drawBackground(int color) {
@@ -19,9 +26,9 @@ public class RenderGame {
     }
 
     public void drawScore(int score) {
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(120);
-        canvas.drawText("Score: " + score, 20, 120, paint);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(SCORE_TEXT_SIZE);
+        canvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
     }
 
     public void drawGameObjects(List<GameObject> gameObjects) {
@@ -31,7 +38,6 @@ public class RenderGame {
     }
 
     public void drawCustomText(String text, int x, int y, int color, int textSize, Paint.Align align) {
-        Paint textPaint = new Paint();
         textPaint.setColor(color);
         textPaint.setTextSize(textSize);
         textPaint.setTextAlign(align);
