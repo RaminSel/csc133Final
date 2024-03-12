@@ -186,6 +186,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private void finalizeCanvas() {
+
         mSurfaceHolder.unlockCanvasAndPost(mCanvas);
     }
 
@@ -220,6 +221,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     public boolean ismPaused() {
+
         return mPaused;
     }
 

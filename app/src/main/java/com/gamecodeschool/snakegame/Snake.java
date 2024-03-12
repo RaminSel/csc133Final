@@ -203,7 +203,6 @@ class Snake extends GameObject implements Movable, Updateable {
     }
 
     boolean checkDinner(Point l) {
-        //if (snakeXs[0] == l.x && snakeYs[0] == l.y) {
         if (segmentLocations.get(0).x == l.x &&
                 segmentLocations.get(0).y == l.y) {
             // Add a new Point to the lis located off-screen. move it will take the position
