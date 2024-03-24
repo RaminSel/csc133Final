@@ -1,19 +1,21 @@
-b8e23c5 - Ramin Selseleh, 86 minutes ago : Update text size
-f69bf10 - Ramin Selseleh, 11 days ago : Cleaned some psuedocode and coding standard
-3f359ba - ParsaBayatt, 11 days ago : Merge pull request #5 from RaminSel/CodeUpdate
-062f180 - ParsaBayatt, 11 days ago : Update ManageSound.java
-9de10b9 - ParsaBayatt, 11 days ago : Update SnakeActivity.java
-b95b7ca - ParsaBayatt, 11 days ago : Update RenderGame.java
-65653b8 - ParsaBayatt, 11 days ago : Update SnakeGame.java
-91b50c2 - ParsaBayatt, 11 days ago : Update Apple.java
-f068a75 - Ramin Selseleh, 12 days ago : Got rid of code smells
-25a5701 - Ramin Selseleh, 2 weeks ago : Added a new file to handle the drawing of Snake Game.java
-9463e08 - RaminSel, 2 weeks ago : Merge pull request #4 from RaminSel/encap
-61f5e1e - Ramin Selseleh, 2 weeks ago : Incoreprated encapsulation and cleaned up some code smells
-04bb117 - RaminSel, 2 weeks ago : Merge pull request #3 from RaminSel/newBck
-938db6c - ParsaBayatt, 2 weeks ago : Update SnakeGame.java
-c24acc7 - RaminSel, 2 weeks ago : Merge pull request #2 from RaminSel/fix-crash-issue
-1b18a88 - Ramin Selseleh, 2 weeks ago : Added interface and abstract classes
+192068c - Ramin Selseleh, 63 seconds ago : Changed font of texts
+24876aa - Ramin Selseleh, 2 days ago : logs
+b8e23c5 - Ramin Selseleh, 2 days ago : Update text size
+f69bf10 - Ramin Selseleh, 13 days ago : Cleaned some psuedocode and coding standard
+3f359ba - ParsaBayatt, 13 days ago : Merge pull request #5 from RaminSel/CodeUpdate
+062f180 - ParsaBayatt, 13 days ago : Update ManageSound.java
+9de10b9 - ParsaBayatt, 13 days ago : Update SnakeActivity.java
+b95b7ca - ParsaBayatt, 13 days ago : Update RenderGame.java
+65653b8 - ParsaBayatt, 13 days ago : Update SnakeGame.java
+91b50c2 - ParsaBayatt, 13 days ago : Update Apple.java
+f068a75 - Ramin Selseleh, 2 weeks ago : Got rid of code smells
+25a5701 - Ramin Selseleh, 3 weeks ago : Added a new file to handle the drawing of Snake Game.java
+9463e08 - RaminSel, 3 weeks ago : Merge pull request #4 from RaminSel/encap
+61f5e1e - Ramin Selseleh, 3 weeks ago : Incoreprated encapsulation and cleaned up some code smells
+04bb117 - RaminSel, 3 weeks ago : Merge pull request #3 from RaminSel/newBck
+938db6c - ParsaBayatt, 3 weeks ago : Update SnakeGame.java
+c24acc7 - RaminSel, 3 weeks ago : Merge pull request #2 from RaminSel/fix-crash-issue
+1b18a88 - Ramin Selseleh, 3 weeks ago : Added interface and abstract classes
 2047d56 - RaminSel, 3 weeks ago : Merge pull request #1 from RaminSel/fix-crash-issue
 c503ce5 - Ramin Selseleh, 3 weeks ago : Fixed issue regarding app crashing. It was related to having two move() calls within two diffrent update methids. Since we are using polymorphism, there was no need to having multiple move() calls for the snake.
 b88db36 - Ramin Selseleh, 3 weeks ago : Issue with adding dynamic polymorphism. Apps keeps crashing. woeking on resolution
