@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import java.util.List;
+import android.graphics.Typeface;
 
 public class RenderGame {
     private Canvas canvas;
@@ -19,6 +20,8 @@ public class RenderGame {
         this.canvas = canvas;
         this.paint = paint;
         this.textPaint = new Paint(paint);
+        textPaint.setTypeface(Typeface.create(textPaint.getTypeface(), Typeface.ITALIC));
+
     }
 
     public void drawBackground(int color) {
