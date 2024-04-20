@@ -15,6 +15,8 @@ class Snake extends GameObject implements Movable, Updateable {
 
     // The location in the grid of all the segments
     private ArrayList<Point> segmentLocations;
+    private ArrayList<Point> body; // This list holds the points representing the snake's body
+
 
     // How big is each segment of the snake?
     private int mSegmentSize;
@@ -264,6 +266,25 @@ class Snake extends GameObject implements Movable, Updateable {
         }
     }
 
+
+    public Snake() {
+        body = new ArrayList<>();
+        // Initialize the snake's body, for example:
+        body.add(new Point(5, 5)); // Add the initial head position
+        // Add other segments if necessary
+    }
+
+
+    public Point getHeadLocation() {
+        // The head is typically the first element in the list representing the snake's body
+        return new Point(segmentLocations.get(0).x, segmentLocations.get(0).y);
+    }
+
+
+    public boolean checkCollision(Point wallLocation) {
+        Point head = segmentLocations.get(0);
+        return head.equals(wallLocation);
+    }
 
     // Handle changing direction
     void switchHeading(MotionEvent motionEvent) {

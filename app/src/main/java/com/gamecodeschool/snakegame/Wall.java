@@ -41,8 +41,14 @@ public class Wall extends GameObject {
         }
     }
 
+    public Point getLocation() {
+        return new Point(x / mBlockSize, y / mBlockSize); // Ensure coordinates align with game logic
+    }
+
     @Override
     public void update() {
         // This can remain empty if the wall doesn't need to change or move
     }
+
+
 }

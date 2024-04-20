@@ -95,6 +95,14 @@ class SnakeGame extends SurfaceView implements Runnable{
         mNextFrameTime = System.currentTimeMillis();
 
         mHandler.postDelayed(addNewWall, 10000);
+
+        synchronized (gameObjects) {
+            gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
+        }
+
+        // Reset wall spawning mechanism
+        mHandler.removeCallbacks(addNewWall);
+        mHandler.postDelayed(addNewWall, 10000);
     }
 
     @Override
@@ -130,26 +138,68 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
 
+    //public void update() {
+        //updateGameObjects();
+        //checkSnakeEatingApple();
+      //  checkSnakeDeath();
+    //}
+
     public void update() {
-        updateGameObjects();
-        checkSnakeEatingApple();
+        mSnake.move(); // Move the snake first
+        checkCollisions();
         checkSnakeDeath();
     }
 
-
-
-
-    private void updateGameObjects() {
-        mSnake.move();
-
-        synchronized (gameObjects) {
-            for (GameObject object : gameObjects) {
-                if (object != null) {
-                    object.update();
-                }
+    private void checkCollisions() {
+        for (GameObject object : gameObjects) {
+            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())) {
+                // Collision with a wall, play crash sound and stop the game
+                playCrashSound();
+                mPaused = true; // End the game
+                return; // No need to check other objects
+            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
+                // The snake has eaten an apple
+                playEatSound();
+                mScore += 1;
+                ((Apple)object).spawn(mScore); // Note: spawn now considers score
+            } else {
+                // No collision, update the game object normally
+                object.update();
             }
         }
     }
+
+
+    private void updateGameObjects() {
+        mSnake.move(); // Move the snake first
+
+        // Check for collisions with the wall and the apple
+        GameObject collisionObject = null;
+        for (GameObject object : gameObjects) {
+            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())) {
+                // Collision with a wall, play crash sound and stop the game
+                playCrashSound();
+                mPaused = true; // End the game
+                break; // No need to check other objects
+            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
+                // The snake has eaten an apple
+                playEatSound();
+                mScore += 1;
+                ((Apple)object).spawn();
+            } else {
+                // No collision, update the game object normally
+                object.update();
+            }
+        }
+
+        // If the game is over, clear all walls (bricks)
+        if (mPaused) {
+            gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
+        }
+    }
+
+
+
 
     private void checkSnakeEatingApple() {
         if (mSnake.checkDinner(mApple.getLocation())) {
