@@ -11,11 +11,15 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.List;
 import android.graphics.Typeface;
 
@@ -28,10 +32,13 @@ class SnakeGame extends SurfaceView implements Runnable{
     private volatile boolean mPlaying = false;
     private volatile boolean mPaused = true;
 
+
     List<GameObject> gameObjects = new ArrayList<>();
     private final int NUM_BLOCKS_WIDE = 40;
     private int mNumBlocksHigh;
     private int mScore;
+
+    private Handler mHandler = new Handler();
 
     private Canvas mCanvas;
     private SurfaceHolder mSurfaceHolder;
@@ -86,6 +93,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         mScore = 0;
         // Setup mNextFrameTime so an update can triggered
         mNextFrameTime = System.currentTimeMillis();
+
+        mHandler.postDelayed(addNewWall, 10000);
     }
 
     @Override
@@ -127,12 +136,17 @@ class SnakeGame extends SurfaceView implements Runnable{
         checkSnakeDeath();
     }
 
+
+
+
     private void updateGameObjects() {
         mSnake.move();
 
-        for (GameObject object : gameObjects) {
-            if (object != null) {
-                object.update();
+        synchronized (gameObjects) {
+            for (GameObject object : gameObjects) {
+                if (object != null) {
+                    object.update();
+                }
             }
         }
     }
@@ -163,6 +177,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     }
 
+
     private boolean prepareCanvas() {
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
@@ -175,10 +190,20 @@ class SnakeGame extends SurfaceView implements Runnable{
         RenderGame renderer = new RenderGame(mCanvas, mPaint);
         renderer.drawBackground(Color.argb(255, 110, 225, 120));
         renderer.drawScore(mScore);
+
+        synchronized (gameObjects) {
+            for(GameObject gameObject : gameObjects) {
+                gameObject.draw(mCanvas, mPaint);
+            }
+        }
         renderer.drawGameObjects(gameObjects);
+        for(GameObject gameObject : gameObjects) {
+            gameObject.draw(mCanvas, mPaint);
+        }
+
         mApple.draw(mCanvas, mPaint);
         mSnake.draw(mCanvas, mPaint);
-        renderer.drawCustomText("Ramin & Parsa", 2900, 120, Color.BLACK, 75, Paint.Align.RIGHT);
+        renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.BLACK, 75, Paint.Align.RIGHT);
     }
 
     private void drawPauseScreen() {
@@ -214,6 +239,23 @@ class SnakeGame extends SurfaceView implements Runnable{
         return true;
     }
 
+    // Inside your SnakeGame class
+    private Runnable addNewWall = new Runnable() {
+        @Override
+        public void run() {
+            if(!mPaused) {
+
+                int blockSize = getWidth() / NUM_BLOCKS_WIDE;
+                Wall wall = new Wall(getContext(), new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+                synchronized (gameObjects) {
+                    gameObjects.add(wall);
+                }
+                // Reschedule the runnable after 10 seconds
+                mHandler.postDelayed(this, 10000);
+            }
+        }
+    };
+
     public void togForPause() {
         mPaused = !mPaused;
 
@@ -230,6 +272,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // Stop the thread
     public void pause() {
+        mHandler.removeCallbacks(addNewWall);
         mPlaying = false;
         try {
             mThread.join();
@@ -240,8 +283,10 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // Start the thread
     public void resume() {
+        mHandler.post(addNewWall);
         mPlaying = true;
         mThread = new Thread(this);
         mThread.start();
     }
+
 }

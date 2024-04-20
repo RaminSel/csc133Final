@@ -166,7 +166,7 @@ class Snake extends GameObject implements Movable, Updateable {
 
 
     // overload move method
-    
+
     /**
      * Moves the snake in the specified direction.
      *
