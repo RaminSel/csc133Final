@@ -3,6 +3,8 @@ package com.gamecodeschool.snakegame;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +14,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -49,6 +52,29 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     private ManageSound soundManager;
 
+    private Bitmap[] backgroundFrames;
+    private int currentFrameIndex = 0;
+
+
+    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+    private int screenWidth = displayMetrics.widthPixels;
+    private int screenHeight = displayMetrics.heightPixels;
+
+
+    private int backgroundWidth = 3120;
+    private int backgroundHeight = 1440;
+
+    // Calculate the scaling factors
+    private float scaleX = (float) screenWidth / backgroundWidth;
+    private float scaleY = (float) screenHeight / backgroundHeight;
+
+    // Choose the larger scaling factor to ensure the entire image covers the screen
+    private float scaleFactor = Math.max(scaleX, scaleY);
+
+    // Calculate the scaled dimensions of the background image
+    private int scaledWidth = (int) (backgroundWidth * scaleFactor);
+    private int scaledHeight = (int) (backgroundHeight * scaleFactor);
+
     public void playEatSound() {
         soundManager.playEatSound();
     }
@@ -64,12 +90,21 @@ class SnakeGame extends SurfaceView implements Runnable{
         initializeGameArea(size);
         initializeGameObjects(context, size);
         initializeDrawingObjects();
+        loadBackgroundFrames(context);
         soundManager = new ManageSound(context);
     }
 
     private void initializeGameArea(Point size) {
         int blockSize = size.x / NUM_BLOCKS_WIDE;
         mNumBlocksHigh = size.y / blockSize;
+    }
+
+    private void loadBackgroundFrames(Context context) {
+        backgroundFrames = new Bitmap[40];
+        for (int i = 0; i < backgroundFrames.length; i++) {
+            int resourceId = context.getResources().getIdentifier("frame" + i, "drawable", context.getPackageName());
+            backgroundFrames[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), resourceId), scaledWidth, scaledHeight, true);
+        }
     }
 
     private void initializeGameObjects(Context context, Point size) {
@@ -238,7 +273,12 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     private void drawGameElements() {
         RenderGame renderer = new RenderGame(mCanvas, mPaint);
-        renderer.drawBackground(Color.argb(255, 110, 225, 120));
+        mCanvas.drawBitmap(backgroundFrames[currentFrameIndex], 0, 0, mPaint);
+        if (currentFrameIndex == backgroundFrames.length - 1) {
+            currentFrameIndex = 0;
+        } else {
+            currentFrameIndex++;
+        }
         renderer.drawScore(mScore);
 
         synchronized (gameObjects) {
@@ -253,7 +293,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         mApple.draw(mCanvas, mPaint);
         mSnake.draw(mCanvas, mPaint);
-        renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.BLACK, 75, Paint.Align.RIGHT);
+        renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
     }
 
     private void drawPauseScreen() {
