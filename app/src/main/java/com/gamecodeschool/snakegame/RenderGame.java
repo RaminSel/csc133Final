@@ -3,6 +3,8 @@ package com.gamecodeschool.snakegame;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import java.util.ArrayList;
 import java.util.List;
 import android.graphics.Typeface;
 
@@ -35,7 +37,8 @@ public class RenderGame {
     }
 
     public void drawGameObjects(List<GameObject> gameObjects) {
-        for (GameObject gameObject : gameObjects) {
+        List<GameObject> copy = new ArrayList<>(gameObjects); // Create a copy of the list
+        for(GameObject gameObject : copy) {
             gameObject.draw(canvas, paint);
         }
     }
