@@ -29,7 +29,7 @@ class Snake extends GameObject implements Movable, Updateable {
     private int halfWayPoint;
 
     // For tracking movement Heading
-    private enum Heading {
+    enum Heading {
         UP, RIGHT, DOWN, LEFT
     }
 
