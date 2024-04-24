@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainMenuActivity">
+
+
+        <ImageView
+            android:id="@+id/mainMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/mainmenu" />
+
+        <Button
+            android:id="@+id/start_game_button"
+            android:layout_width="174dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/start_a_new_game" />
+
+        <Button
+            android:id="@+id/options_button"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/start_game_button"
+            android:layout_centerHorizontal="true"
+            android:text="@string/options" />
+
+        <TextView
+            android:id="@+id/gameTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/game_title"
+            android:textColor="#00C853"
+            android:textSize="70sp" />
+
+    </RelativeLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
