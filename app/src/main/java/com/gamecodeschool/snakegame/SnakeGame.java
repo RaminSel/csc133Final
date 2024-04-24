@@ -35,6 +35,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     private volatile boolean mPlaying = false;
     private volatile boolean mPaused = true;
 
+    private volatile boolean mpauseBtn = false;
+
 
     List<GameObject> gameObjects = new ArrayList<>();
     private final int NUM_BLOCKS_WIDE = 40;
@@ -143,7 +145,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     @Override
     public void run() {
         while (mPlaying) {
-            if(!mPaused) {
+            if(!mPaused && !mpauseBtn) {
                 // Update 10 times a second
                 if (updateRequired()) {
                     update();
@@ -156,7 +158,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Check to see if it is time for an update
     public boolean updateRequired() {
 
-        final long TARGET_FPS = 8;
+        final long TARGET_FPS = 10;
         final long MILLIS_PER_SECOND = 1000;
 
         // Are we due to update the frame
@@ -255,7 +257,10 @@ class SnakeGame extends SurfaceView implements Runnable{
     public void draw() {
         if (prepareCanvas()) {
             drawGameElements();
-            if(mPaused) {
+            if(mpauseBtn && !mPaused) {
+                drawPauseBtnScreen();
+            }
+            if(mPaused){
                 drawPauseScreen();
             }
             finalizeCanvas();
@@ -300,7 +305,16 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.ITALIC));
         mPaint.setColor(Color.argb(255, 255, 255, 255));
         mPaint.setTextSize(175);
-        mCanvas.drawText(getResources().getString(R.string.tap_to_play), 200, 700, mPaint);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mCanvas.drawText(getResources().getString(R.string.tap_to_play), screenWidth/2, screenHeight/2, mPaint);
+    }
+
+    private void drawPauseBtnScreen(){
+        mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.ITALIC));
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(175);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mCanvas.drawText("Paused!", screenWidth/2, screenHeight/2, mPaint);
     }
 
     private void finalizeCanvas() {
@@ -347,9 +361,9 @@ class SnakeGame extends SurfaceView implements Runnable{
     };
 
     public void togForPause() {
-        mPaused = !mPaused;
+        mpauseBtn = !mpauseBtn;
 
-        if (!mPaused) {
+        if (!mpauseBtn) {
             mNextFrameTime = System.currentTimeMillis();
         }
 
@@ -357,7 +371,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     public boolean ismPaused() {
 
-        return mPaused;
+        return mpauseBtn;
     }
 
     // Stop the thread
