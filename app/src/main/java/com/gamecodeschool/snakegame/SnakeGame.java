@@ -94,6 +94,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         initializeDrawingObjects();
         loadBackgroundFrames(context);
         soundManager = new ManageSound(context);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
     }
 
     private void initializeGameArea(Point size) {
@@ -422,6 +424,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPlaying = true;
         mThread = new Thread(this);
         mThread.start();
+    }
+
+    public Snake getSnake() {
+        return mSnake;
     }
 
 }
