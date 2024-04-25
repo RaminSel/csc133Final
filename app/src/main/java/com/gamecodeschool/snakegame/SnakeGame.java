@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
 import android.graphics.Typeface;
-
+import android.view.KeyEvent;
 
 class SnakeGame extends SurfaceView implements Runnable{
 
@@ -94,6 +94,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         initializeDrawingObjects();
         loadBackgroundFrames(context);
         soundManager = new ManageSound(context);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
     }
 
     private void initializeGameArea(Point size) {
@@ -357,6 +359,40 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     };
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_W:
+            case KeyEvent.KEYCODE_DPAD_UP:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.UP);
+                }
+                return true;
+            case KeyEvent.KEYCODE_S:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.DOWN);
+                }
+                return true;
+            case KeyEvent.KEYCODE_A:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.LEFT);
+                }
+                return true;
+            case KeyEvent.KEYCODE_D:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.RIGHT);
+                }
+                return true;
+            case KeyEvent.KEYCODE_SPACE:
+                togForPause(); // Pause the Game
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public void togForPause() {
         mPaused = !mPaused;
 
@@ -388,6 +424,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPlaying = true;
         mThread = new Thread(this);
         mThread.start();
+    }
+
+    public Snake getSnake() {
+        return mSnake;
     }
 
 }
