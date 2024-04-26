@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
 import android.graphics.Typeface;
-
+import android.view.KeyEvent;
 
 class SnakeGame extends SurfaceView implements Runnable{
 
@@ -39,7 +39,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
 
     List<GameObject> gameObjects = new ArrayList<>();
-    private final int NUM_BLOCKS_WIDE = 40;
+    private final int NUM_BLOCKS_WIDE = 30;
     private int mNumBlocksHigh;
     private int mScore;
 
@@ -51,6 +51,8 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     private Snake mSnake;
     private Apple mApple;
+
+    private Shark mShark;
 
     private ManageSound soundManager;
 
@@ -94,6 +96,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         initializeDrawingObjects();
         loadBackgroundFrames(context);
         soundManager = new ManageSound(context);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
     }
 
     private void initializeGameArea(Point size) {
@@ -113,8 +117,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         int blockSize = size.x / NUM_BLOCKS_WIDE;
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+        mShark = new Shark(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         gameObjects.add(mSnake);
         gameObjects.add(mApple);
+        gameObjects.add(mShark);
     }
 
     private void initializeDrawingObjects() {
@@ -126,6 +132,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Get the apple ready for dinner
         mApple.spawn();
+        //Reset shark location
+        mShark.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Reset the mScore
         mScore = 0;
         // Setup mNextFrameTime so an update can triggered
@@ -183,18 +191,21 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     public void update() {
         mSnake.move(); // Move the snake first
+        mShark.move();
         checkCollisions();
         checkSnakeDeath();
     }
 
     private void checkCollisions() {
         for (GameObject object : gameObjects) {
-            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())) {
+            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
+            || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
                 // Collision with a wall, play crash sound and stop the game
                 playCrashSound();
                 mPaused = true; // End the game
                 return; // No need to check other objects
-            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
+            }
+            else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
                 // The snake has eaten an apple
                 playEatSound();
                 mScore += 1;
@@ -213,7 +224,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Check for collisions with the wall and the apple
         GameObject collisionObject = null;
         for (GameObject object : gameObjects) {
-            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())) {
+            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
+            ) {
                 // Collision with a wall, play crash sound and stop the game
                 playCrashSound();
                 mPaused = true; // End the game
@@ -298,6 +310,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         mApple.draw(mCanvas, mPaint);
         mSnake.draw(mCanvas, mPaint);
+        mShark.draw(mCanvas, mPaint);
         renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
     }
 
@@ -360,6 +373,40 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     };
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_W:
+            case KeyEvent.KEYCODE_DPAD_UP:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.UP);
+                }
+                return true;
+            case KeyEvent.KEYCODE_S:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.DOWN);
+                }
+                return true;
+            case KeyEvent.KEYCODE_A:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.LEFT);
+                }
+                return true;
+            case KeyEvent.KEYCODE_D:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if (!mPaused) {
+                    mSnake.move(Snake.Heading.RIGHT);
+                }
+                return true;
+            case KeyEvent.KEYCODE_SPACE:
+                togForPause(); // Pause the Game
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public void togForPause() {
         mpauseBtn = !mpauseBtn;
 
@@ -391,6 +438,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPlaying = true;
         mThread = new Thread(this);
         mThread.start();
+    }
+
+    public Snake getSnake() {
+        return mSnake;
     }
 
 }
