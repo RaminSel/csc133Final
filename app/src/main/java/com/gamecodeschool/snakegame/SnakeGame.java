@@ -39,7 +39,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
 
     List<GameObject> gameObjects = new ArrayList<>();
-    private final int NUM_BLOCKS_WIDE = 30;
+    private final int NUM_BLOCKS_WIDE = 40;
     private int mNumBlocksHigh;
     private int mScore;
 
