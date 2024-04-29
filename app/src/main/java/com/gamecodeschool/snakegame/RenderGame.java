@@ -31,7 +31,7 @@ public class RenderGame {
     }
 
     public void drawScore(int score) {
-        textPaint.setColor(Color.GREEN);
+        textPaint.setColor(Color.RED);
         textPaint.setTextSize(SCORE_TEXT_SIZE);
         canvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
     }
