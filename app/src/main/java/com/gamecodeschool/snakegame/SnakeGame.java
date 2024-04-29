@@ -108,9 +108,32 @@ class SnakeGame extends SurfaceView implements Runnable{
     private void loadBackgroundFrames(Context context) {
         backgroundFrames = new Bitmap[40];
         for (int i = 0; i < backgroundFrames.length; i++) {
-            int resourceId = context.getResources().getIdentifier("frame" + i, "drawable", context.getPackageName());
-            backgroundFrames[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), resourceId), scaledWidth, scaledHeight, true);
+            // Load frames lazily
+            backgroundFrames[i] = loadFrame(context, i);
         }
+    }
+
+    private Bitmap loadFrame(Context context, int frameIndex) {
+        int resourceId = context.getResources().getIdentifier("frame" + frameIndex, "drawable", context.getPackageName());
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = calculateInSampleSize(options, scaledWidth, scaledHeight);
+        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), resourceId, options), scaledWidth, scaledHeight, true);
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            // Calculate ratios of height and width to requested height and width
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            // Choose the smallest ratio as inSampleSize value, which will be a power of 2
+            inSampleSize = Math.min(heightRatio, widthRatio);
+        }
+        return inSampleSize;
     }
 
     private void initializeGameObjects(Context context, Point size) {
