@@ -15,7 +15,7 @@ public class RenderGame {
 
     // Constants for readability and easier maintenance
     private static final int SCORE_TEXT_SIZE = 120;
-    private static final int SCORE_X_POSITION = 20;
+    private static final int SCORE_X_POSITION = 250;
     private static final int SCORE_Y_POSITION = 120;
 
     public RenderGame(Canvas canvas, Paint paint) {
@@ -31,7 +31,7 @@ public class RenderGame {
     }
 
     public void drawScore(int score) {
-        textPaint.setColor(Color.RED);
+        textPaint.setColor(Color.GREEN);
         textPaint.setTextSize(SCORE_TEXT_SIZE);
         canvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
     }

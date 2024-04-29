@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.gamecodeschool.snakegame">
 
     <application
         android:allowBackup="true"
@@ -9,16 +9,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SnakeGame">
-        <activity android:name=".SnakeActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="landscape"
+
+        <!-- Specify your launcher activity -->
+        <activity android:name=".MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Add other activities here -->
+        <activity android:name=".SnakeActivity" />
+        <activity android:name=".OptionsActivity" />
+
     </application>
+
+    <!-- Add permissions here if needed -->
+    <!-- Add other configurations here if needed -->
 
 </manifest>

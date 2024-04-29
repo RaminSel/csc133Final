@@ -16,7 +16,7 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
     private Bitmap mBitmapHeadRight;
     private Bitmap mBitmapHeadLeft;
     private Point location;
-    private int sharkSpeed = 3;
+    private int sharkSpeed = 2;
     private enum Heading {
         RIGHT, LEFT
     }
