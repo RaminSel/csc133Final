@@ -39,7 +39,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
 
     List<GameObject> gameObjects = new ArrayList<>();
-    private final int NUM_BLOCKS_WIDE = 40;
+    private final int NUM_BLOCKS_WIDE = 25;
     private int mNumBlocksHigh;
     private int mScore;
 
@@ -53,6 +53,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     private Apple mApple;
 
     private Shark mShark;
+
+
 
     private ManageSound soundManager;
 
@@ -78,6 +80,13 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Calculate the scaled dimensions of the background image
     private int scaledWidth = (int) (backgroundWidth * scaleFactor);
     private int scaledHeight = (int) (backgroundHeight * scaleFactor);
+    private goldenApple mGold;
+
+    public static int getBlockSize() {
+        return blockSize;
+    }
+
+    private static int blockSize;
 
     public void playEatSound() {
         soundManager.playEatSound();
@@ -137,12 +146,15 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private void initializeGameObjects(Context context, Point size) {
-        int blockSize = size.x / NUM_BLOCKS_WIDE;
+        blockSize = size.x / NUM_BLOCKS_WIDE;
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+        mGold = new goldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mShark = new Shark(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+
         gameObjects.add(mSnake);
         gameObjects.add(mApple);
+        gameObjects.add(mGold);
         gameObjects.add(mShark);
     }
 
@@ -151,10 +163,14 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPaint = new Paint();
     }
 
+
+
     public void newGame() {
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Get the apple ready for dinner
         mApple.spawn();
+
+        mGold.spawn();
         //Reset shark location
         mShark.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Reset the mScore
@@ -166,6 +182,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         synchronized (gameObjects) {
             gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
+
         }
 
         // Reset wall spawning mechanism
@@ -206,11 +223,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
 
-    //public void update() {
-        //updateGameObjects();
-        //checkSnakeEatingApple();
-      //  checkSnakeDeath();
-    //}
+
 
     public void update() {
         mSnake.move(); // Move the snake first
@@ -220,6 +233,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private void checkCollisions() {
+
+        boolean goldenAppleSpawned = false;
         for (GameObject object : gameObjects) {
             if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
             || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
@@ -232,54 +247,39 @@ class SnakeGame extends SurfaceView implements Runnable{
                 // The snake has eaten an apple
                 playEatSound();
                 mScore += 1;
-                ((Apple)object).spawn(mScore); // Note: spawn now considers score
-            } else {
-                // No collision, update the game object normally
-                object.update();
-            }
-        }
-    }
+                ((Apple)object).spawn(); // Note: spawn now considers score
 
-
-    private void updateGameObjects() {
-        mSnake.move(); // Move the snake first
-
-        // Check for collisions with the wall and the apple
-        GameObject collisionObject = null;
-        for (GameObject object : gameObjects) {
-            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
-            ) {
-                // Collision with a wall, play crash sound and stop the game
-                playCrashSound();
-                mPaused = true; // End the game
-                break; // No need to check other objects
-            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
-                // The snake has eaten an apple
+            }else if (object instanceof goldenApple && mSnake.checkDinner(((goldenApple) object).getLocation())) {
+                // The snake has eaten a golden apple
                 playEatSound();
-                mScore += 1;
-                ((Apple)object).spawn();
-            } else {
+                mScore +=3;
+                // Despawn the golden apple
+                ((goldenApple) object).despawn();
+            }
+            else if (object instanceof goldenApple) {
+                goldenAppleSpawned = true;
+            }
+            else {
                 // No collision, update the game object normally
                 object.update();
             }
-        }
 
-        // If the game is over, clear all walls (bricks)
-        if (mPaused) {
-            gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
-        }
-    }
+            if (!goldenAppleSpawned && Math.random() < 0.1) { // 10% chance
+                mGold.spawn();
+            }
+
+            // Check if golden apple and regular apple are on the same location
+            if (mGold.getLocation().equals(mApple.getLocation())) {
+                // Respawn golden apple
+                mGold.spawn();
 
 
+            }
 
-
-    private void checkSnakeEatingApple() {
-        if (mSnake.checkDinner(mApple.getLocation())) {
-            mApple.spawn();
-            mScore += 1;
-            playEatSound();
         }
     }
+
+
 
     private void checkSnakeDeath() {
         if (mSnake.detectDeath()) {
@@ -332,6 +332,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
 
         mApple.draw(mCanvas, mPaint);
+        mGold.draw(mCanvas,mPaint);
         mSnake.draw(mCanvas, mPaint);
         mShark.draw(mCanvas, mPaint);
         renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
