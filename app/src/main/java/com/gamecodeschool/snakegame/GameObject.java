@@ -11,3 +11,5 @@ public abstract class GameObject implements Drawing, Updateable {
     @Override
     public abstract void update();
 }
+
+

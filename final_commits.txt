@@ -1,0 +1,28 @@
+6306a8b - RaminSel, 12 minutes ago : Fixed color schemes
+42398d4 - 4runner99, 34 minutes ago : merging into main with julian
+74757d4 - 4runner99, 42 minutes ago : push stuff
+936bf42 - RaminSel, 6 hours ago : Fixed some color schemes within the and bugs regarding fish
+c69eb3c - 4runner99, 3 days ago : Merge remote-tracking branch 'origin/Parsa' into Julian
+17b60eb - RaminSel, 3 days ago : Merge pull request #6 from RaminSel/Parsa
+fadf933 - ParsaBayatt, 3 days ago : Added keyboard functionality to SnakeGame.java
+35759d5 - ParsaBayatt, 3 days ago : Added Keyboard functionality to SnakeGame.java
+0581bb5 - 4runner99, 5 days ago : stuff
+31c7fa9 - 4runner99, 5 days ago : pressing pause now shows "Paused!"
+9af38f9 - 4runner99, 5 days ago : options activity added needs stuff.
+1429540 - 4runner99, 5 days ago : random main menu picture lol
+fe94ec8 - 4runner99, 5 days ago : android manifest file edited to show main menu first
+d1a2f1a - 4runner99, 5 days ago : edited activity_main.xml
+7614b37 - 4runner99, 5 days ago : added dependence for glide
+5733614 - 4runner99, 5 days ago : main menu added
+a230624 - tjudtmartine, 6 days ago : Merge pull request #4 from RaminSel/Tyler
+6da1a3f - tjudtmartine, 6 days ago : Fixed concurrent modification error in render game
+945bcf4 - tjudtmartine, 6 days ago : Merge pull request #3 from RaminSel/Tyler
+6f5bf37 - tjudtmartine, 6 days ago : New game object: shark
+45a92d5 - RaminSel, 7 days ago : Merge pull request #2 from RaminSel/Julian
+e47351a - 4runner99, 7 days ago : added method to load animated background, working now.
+d584000 - 4runner99, 7 days ago : gold apple graphic
+39981f2 - 4runner99, 7 days ago : frames added for animated background
+738ce3a - 4runner99, 7 days ago : new fish head graphic replacing snake head
+8e169a2 - RaminSel, 8 days ago : Merge pull request #1 from RaminSel/Ramin
+9a680c3 - RaminSel, 9 days ago : collision with brick is now working properly
+764517b - RaminSel, 9 days ago : Added the first edition of the wall within the game. Still needs progress

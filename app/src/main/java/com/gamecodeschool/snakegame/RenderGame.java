@@ -50,3 +50,6 @@ public class RenderGame {
         canvas.drawText(text, x, y, textPaint);
     }
 }
+
+
+
