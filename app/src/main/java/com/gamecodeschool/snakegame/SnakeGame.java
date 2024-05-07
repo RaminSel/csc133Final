@@ -39,7 +39,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
 
     List<GameObject> gameObjects = new ArrayList<>();
-    private final int NUM_BLOCKS_WIDE = 40;
+    private final int NUM_BLOCKS_WIDE = 25;
     private int mNumBlocksHigh;
     private int mScore;
 
@@ -53,6 +53,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     private Apple mApple;
 
     private Shark mShark;
+
+
 
     private ManageSound soundManager;
 
@@ -78,6 +80,13 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Calculate the scaled dimensions of the background image
     private int scaledWidth = (int) (backgroundWidth * scaleFactor);
     private int scaledHeight = (int) (backgroundHeight * scaleFactor);
+    private goldenApple mGold;
+
+    public static int getBlockSize() {
+        return blockSize;
+    }
+
+    private static int blockSize;
 
     public void playEatSound() {
         soundManager.playEatSound();
@@ -110,18 +119,44 @@ class SnakeGame extends SurfaceView implements Runnable{
     private void loadBackgroundFrames(Context context) {
         backgroundFrames = new Bitmap[40];
         for (int i = 0; i < backgroundFrames.length; i++) {
-            int resourceId = context.getResources().getIdentifier("frame" + i, "drawable", context.getPackageName());
-            backgroundFrames[i] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), resourceId), scaledWidth, scaledHeight, true);
+            // Load frames lazily
+            backgroundFrames[i] = loadFrame(context, i);
         }
     }
 
+    private Bitmap loadFrame(Context context, int frameIndex) {
+        int resourceId = context.getResources().getIdentifier("frame" + frameIndex, "drawable", context.getPackageName());
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = calculateInSampleSize(options, scaledWidth, scaledHeight);
+        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), resourceId, options), scaledWidth, scaledHeight, true);
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            // Calculate ratios of height and width to requested height and width
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            // Choose the smallest ratio as inSampleSize value, which will be a power of 2
+            inSampleSize = Math.min(heightRatio, widthRatio);
+        }
+        return inSampleSize;
+    }
+
     private void initializeGameObjects(Context context, Point size) {
-        int blockSize = size.x / NUM_BLOCKS_WIDE;
+        blockSize = size.x / NUM_BLOCKS_WIDE;
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+        mGold = new goldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mShark = new Shark(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+
         gameObjects.add(mSnake);
         gameObjects.add(mApple);
+        gameObjects.add(mGold);
         gameObjects.add(mShark);
     }
 
@@ -130,12 +165,16 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPaint = new Paint();
     }
 
+
+
     public void newGame() {
         soundManager.playBackgroundMusic(); // Ensure the background music starts
 
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Get the apple ready for dinner
         mApple.spawn();
+
+        mGold.spawn();
         //Reset shark location
         mShark.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Reset the mScore
@@ -147,6 +186,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         synchronized (gameObjects) {
             gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
+
         }
 
         // Reset wall spawning mechanism
@@ -187,11 +227,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
 
-    //public void update() {
-        //updateGameObjects();
-        //checkSnakeEatingApple();
-      //  checkSnakeDeath();
-    //}
+
 
     public void update() {
         mSnake.move(); // Move the snake first
@@ -201,6 +237,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private void checkCollisions() {
+
+        boolean goldenAppleSpawned = false;
         for (GameObject object : gameObjects) {
             if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
             || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
@@ -215,54 +253,39 @@ class SnakeGame extends SurfaceView implements Runnable{
                 // The snake has eaten an apple
                 playEatSound();
                 mScore += 1;
-                ((Apple)object).spawn(mScore); // Note: spawn now considers score
-            } else {
-                // No collision, update the game object normally
-                object.update();
-            }
-        }
-    }
+                ((Apple)object).spawn(); // Note: spawn now considers score
 
-
-    private void updateGameObjects() {
-        mSnake.move(); // Move the snake first
-
-        // Check for collisions with the wall and the apple
-        GameObject collisionObject = null;
-        for (GameObject object : gameObjects) {
-            if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
-            ) {
-                // Collision with a wall, play crash sound and stop the game
-                playCrashSound();
-                mPaused = true; // End the game
-                break; // No need to check other objects
-            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
-                // The snake has eaten an apple
+            }else if (object instanceof goldenApple && mSnake.checkDinner(((goldenApple) object).getLocation())) {
+                // The snake has eaten a golden apple
                 playEatSound();
-                mScore += 1;
-                ((Apple)object).spawn();
-            } else {
+                mScore +=3;
+                // Despawn the golden apple
+                ((goldenApple) object).despawn();
+            }
+            else if (object instanceof goldenApple) {
+                goldenAppleSpawned = true;
+            }
+            else {
                 // No collision, update the game object normally
                 object.update();
             }
-        }
 
-        // If the game is over, clear all walls (bricks)
-        if (mPaused) {
-            gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
-        }
-    }
+            if (!goldenAppleSpawned && Math.random() < 0.1) { // 10% chance
+                mGold.spawn();
+            }
+
+            // Check if golden apple and regular apple are on the same location
+            if (mGold.getLocation().equals(mApple.getLocation())) {
+                // Respawn golden apple
+                mGold.spawn();
 
 
+            }
 
-
-    private void checkSnakeEatingApple() {
-        if (mSnake.checkDinner(mApple.getLocation())) {
-            mApple.spawn();
-            mScore += 1;
-            playEatSound();
         }
     }
+
+
 
     private void checkSnakeDeath() {
         if (mSnake.detectDeath()) {
@@ -315,6 +338,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
 
         mApple.draw(mCanvas, mPaint);
+        mGold.draw(mCanvas,mPaint);
         mSnake.draw(mCanvas, mPaint);
         mShark.draw(mCanvas, mPaint);
         renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);

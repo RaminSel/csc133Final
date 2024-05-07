@@ -1,5 +1,6 @@
 package com.gamecodeschool.snakegame;
 
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -7,6 +8,7 @@ import android.graphics.Paint;
 import java.util.ArrayList;
 import java.util.List;
 import android.graphics.Typeface;
+
 
 public class RenderGame {
     private Canvas canvas;
@@ -19,6 +21,7 @@ public class RenderGame {
     private static final int SCORE_Y_POSITION = 120;
 
     public RenderGame(Canvas canvas, Paint paint) {
+
         this.canvas = canvas;
         this.paint = paint;
         this.textPaint = new Paint(paint);
@@ -26,9 +29,6 @@ public class RenderGame {
 
     }
 
-    public void drawBackground(int color) {
-        canvas.drawColor(color);
-    }
 
     public void drawScore(int score) {
         textPaint.setColor(Color.RED);
