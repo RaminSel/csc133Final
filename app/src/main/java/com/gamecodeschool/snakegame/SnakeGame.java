@@ -83,6 +83,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         soundManager.playEatSound();
     }
 
+
     public void playCrashSound() {
         soundManager.playCrashSound();
 
@@ -98,6 +99,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         soundManager = new ManageSound(context);
         setFocusable(true);
         setFocusableInTouchMode(true);
+        soundManager.initBackgroundMusic(context); // Initialize background music
     }
 
     private void initializeGameArea(Point size) {
@@ -129,6 +131,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     public void newGame() {
+        soundManager.playBackgroundMusic(); // Ensure the background music starts
+
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Get the apple ready for dinner
         mApple.spawn();
@@ -202,7 +206,9 @@ class SnakeGame extends SurfaceView implements Runnable{
             || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
                 // Collision with a wall, play crash sound and stop the game
                 playCrashSound();
+                soundManager.stopBackgroundMusic();
                 mPaused = true; // End the game
+                //soundManager.stopBackgroundMusic(); // Stop the background music
                 return; // No need to check other objects
             }
             else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
@@ -423,6 +429,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // Stop the thread
     public void pause() {
+        soundManager.stopBackgroundMusic(); // Stop music when the game is paused
         mHandler.removeCallbacks(addNewWall);
         mPlaying = false;
         try {
@@ -434,6 +441,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     // Start the thread
     public void resume() {
+        soundManager.playBackgroundMusic(); // Play music when game resumes
         mHandler.post(addNewWall);
         mPlaying = true;
         mThread = new Thread(this);
