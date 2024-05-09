@@ -30,6 +30,7 @@ public class RenderGame {
     }
 
 
+
     public void drawScore(int score) {
         textPaint.setColor(Color.RED);
         textPaint.setTextSize(SCORE_TEXT_SIZE);

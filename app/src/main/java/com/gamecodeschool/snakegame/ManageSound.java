@@ -54,13 +54,12 @@ public class ManageSound {
     }
 
 
-
     public void initBackgroundMusic(Context context) {
         try {
             AssetFileDescriptor afd = context.getAssets().openFd("music.ogg");
             backgroundMusic = new MediaPlayer();
             backgroundMusic.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            backgroundMusic.prepare(); // Prepare the MediaPlayer asynchronously if this runs on the UI thread
+            backgroundMusic.prepare();
             backgroundMusic.setLooping(true);
             backgroundMusic.setVolume(1.0f, 1.0f);
         } catch (IOException e) {
@@ -91,5 +90,6 @@ public class ManageSound {
         }
     }
 }
+
 
 

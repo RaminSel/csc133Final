@@ -207,6 +207,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     }
 
+
+
     // Check to see if it is time for an update
     public boolean updateRequired() {
 
