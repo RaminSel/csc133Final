@@ -1,12 +1,15 @@
 package com.gamecodeschool.snakegame;
 
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 
 
@@ -20,34 +23,50 @@ public class RenderGame {
     private static final int SCORE_X_POSITION = 250;
     private static final int SCORE_Y_POSITION = 120;
 
-    public RenderGame(Canvas canvas, Paint paint) {
+    // Create a reusable off-screen buffer for double buffering
+    private Bitmap offscreenBitmap;
+    private Canvas offscreenCanvas;
 
+    public RenderGame(Canvas canvas, Paint paint) {
         this.canvas = canvas;
         this.paint = paint;
-        this.textPaint = new Paint(paint);
-        textPaint.setTypeface(Typeface.create(textPaint.getTypeface(), Typeface.ITALIC));
 
+        // Create the off-screen buffer with the same dimensions as the canvas
+        offscreenBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+        offscreenCanvas = new Canvas(offscreenBitmap);
+
+        // Initialize text paint with typeface and other properties
+        textPaint = new Paint();
+        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
+        textPaint.setTextSize(SCORE_TEXT_SIZE);
+        textPaint.setColor(Color.RED);
     }
 
-
-
     public void drawScore(int score) {
-        textPaint.setColor(Color.RED);
-        textPaint.setTextSize(SCORE_TEXT_SIZE);
-        canvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
+        // Draw score to the off-screen buffer
+        offscreenCanvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
     }
 
     public void drawGameObjects(List<GameObject> gameObjects) {
-        List<GameObject> copy = new ArrayList<>(gameObjects); // Create a copy of the list
-        for(GameObject gameObject : copy) {
-            gameObject.draw(canvas, paint);
+        // Clear the off-screen buffer
+        offscreenCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        // Draw game objects to the off-screen buffer
+        for(GameObject gameObject : gameObjects) {
+            gameObject.draw(offscreenCanvas, paint);
         }
+
+        // Draw the off-screen buffer to the main canvas
+        canvas.drawBitmap(offscreenBitmap, 0, 0, null);
     }
 
     public void drawCustomText(String text, int x, int y, int color, int textSize, Paint.Align align) {
+        Paint textPaint = new Paint();
         textPaint.setColor(color);
         textPaint.setTextSize(textSize);
         textPaint.setTextAlign(align);
+
+        // Draw custom text directly to the main canvas
         canvas.drawText(text, x, y, textPaint);
     }
 }
