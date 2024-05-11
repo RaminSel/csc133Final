@@ -43,8 +43,9 @@ public class RenderGame {
     }
 
     public void drawScore(int score) {
-        // Draw score to the off-screen buffer
-        offscreenCanvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
+        textPaint.setColor(Color.RED);
+        textPaint.setTextSize(SCORE_TEXT_SIZE);
+        canvas.drawText("Score: " + score, SCORE_X_POSITION, SCORE_Y_POSITION, textPaint);
     }
 
     public void drawGameObjects(List<GameObject> gameObjects) {
