@@ -1,29 +1,30 @@
 package com.gamecodeschool.snakegame;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 
-import java.util.Random;
+public class Hook extends GameObject implements Movable, Updateable, Drawing {
 
-public class Shark extends GameObject implements Movable, Updateable, Drawing{
     private Point mMoveRange;
     private int mSegmentSize;
     private Bitmap mBitmapHeadRight;
     private Bitmap mBitmapHeadLeft;
     private Point location;
-    private double sharkSpeed = 1.5;
+    private double sharkSpeed = .5;
+
     private enum Heading {
         RIGHT, LEFT
     }
 
     // Start by heading to the right
-    private Heading heading = Heading.RIGHT;
-    public Shark(Context context, Point mr, int ss){
+    private com.gamecodeschool.snakegame.Hook.Heading heading = com.gamecodeschool.snakegame.Hook.Heading.RIGHT;
+
+    public Hook(Context context, Point mr, int ss) {
         mSegmentSize = ss;
         mMoveRange = mr;
         location = new Point();
@@ -50,6 +51,7 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
                 .createBitmap(mBitmapHeadRight,
                         0, 0, ss, ss, matrix, true);
     }
+
     @Override
     public void draw(Canvas canvas, Paint paint) {
         switch (heading) {
@@ -70,16 +72,17 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
                 break;
         }
     }
-    public void move(){
+
+    public void move() {
 
         // Move it appropriately
         switch (heading) {
             case RIGHT:
                 location.x += sharkSpeed;
-                if(location.x >= mMoveRange.x){
+                if (location.x >= mMoveRange.x) {
                     location.y++;
-                    heading = Heading.LEFT;
-                    if(location.y >= mMoveRange.y){
+                    heading = com.gamecodeschool.snakegame.Hook.Heading.LEFT;
+                    if (location.y >= mMoveRange.y) {
                         location.x = 0;
                         location.y = 0;
                     }
@@ -88,10 +91,10 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
 
             case LEFT:
                 location.x -= sharkSpeed;
-                if(location.x < 0){
+                if (location.x < 0) {
                     location.y++;
-                    heading = Heading.RIGHT;
-                    if(location.y >= mMoveRange.y){
+                    heading = com.gamecodeschool.snakegame.Hook.Heading.RIGHT;
+                    if (location.y >= mMoveRange.y) {
                         location.x = 0;
                         location.y = 0;
                     }
@@ -99,7 +102,8 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
                 break;
         }
     }
-    void move(Heading newHeading) {
+
+    void move(com.gamecodeschool.snakegame.Hook.Heading newHeading) {
         this.heading = newHeading;
         move();
     }
@@ -107,15 +111,17 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
     void reset(int w, int h) {
 
         // Reset the heading
-        heading = Heading.RIGHT;
+        heading = com.gamecodeschool.snakegame.Hook.Heading.RIGHT;
 
         // Delete the old contents of the ArrayList
         location.x = 0;
         location.y = 0;
     }
-    public Point getLocation(){
+
+    public Point getLocation() {
         return new Point(location.x, location.y);
     }
+
     @Override
     public void update() {
 
