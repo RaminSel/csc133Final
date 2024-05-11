@@ -54,6 +54,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     private Shark mShark;
 
+    private Hook mHook;
 
 
     private ManageSound soundManager;
@@ -150,19 +151,21 @@ class SnakeGame extends SurfaceView implements Runnable{
         mGold = new goldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mShark = new Shark(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+        mHook = new Hook(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
 
-        gameObjects.add(mSnake);
-        gameObjects.add(mApple);
-        gameObjects.add(mGold);
-        gameObjects.add(mShark);
+        synchronized (gameObjects) {
+            gameObjects.add(mSnake);
+            gameObjects.add(mApple);
+            gameObjects.add(mGold);
+            gameObjects.add(mShark);
+            gameObjects.add(mHook);
+        }
     }
 
     private void initializeDrawingObjects() {
         mSurfaceHolder = getHolder();
         mPaint = new Paint();
     }
-
-
 
     public void newGame() {
         soundManager.playBackgroundMusic(); // Ensure the background music starts
@@ -174,6 +177,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         mGold.spawn();
         //Reset shark location
         mShark.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+
+        mHook.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         // Reset the mScore
         mScore = 0;
         // Setup mNextFrameTime so an update can triggered
@@ -228,6 +233,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     public void update() {
         mSnake.move(); // Move the snake first
         mShark.move();
+        mHook.move();
         checkCollisions();
         checkSnakeDeath();
     }
@@ -323,20 +329,17 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
         renderer.drawScore(mScore);
 
-        synchronized (gameObjects) {
+        synchronized (gameObjects) { // Synchronize access to gameObjects list
             for(GameObject gameObject : gameObjects) {
                 gameObject.draw(mCanvas, mPaint);
             }
-        }
-        renderer.drawGameObjects(gameObjects);
-        for(GameObject gameObject : gameObjects) {
-            gameObject.draw(mCanvas, mPaint);
         }
 
         mApple.draw(mCanvas, mPaint);
         mGold.draw(mCanvas,mPaint);
         mSnake.draw(mCanvas, mPaint);
         mShark.draw(mCanvas, mPaint);
+        mHook.draw(mCanvas, mPaint);
         renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
     }
 
