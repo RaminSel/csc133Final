@@ -82,9 +82,6 @@ class SnakeGame extends SurfaceView implements Runnable{
     private int scaledHeight = (int) (backgroundHeight * scaleFactor);
     private goldenApple mGold;
 
-    public static int getBlockSize() {
-        return blockSize;
-    }
 
     private static int blockSize;
 
@@ -186,7 +183,6 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         synchronized (gameObjects) {
             gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
-
         }
 
         // Reset wall spawning mechanism
@@ -270,14 +266,14 @@ class SnakeGame extends SurfaceView implements Runnable{
                 object.update();
             }
 
-            if (!goldenAppleSpawned && Math.random() < 0.1) { // 10% chance
+            if (!goldenAppleSpawned && Math.random() < 0.05) { // 10% chance
                 mGold.spawn();
             }
 
             // Check if golden apple and regular apple are on the same location
             if (mGold.getLocation().equals(mApple.getLocation())) {
                 // Respawn golden apple
-                mGold.spawn();
+                mGold.despawn();
 
 
             }
@@ -358,6 +354,14 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPaint.setTextSize(175);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mCanvas.drawText("Paused!", screenWidth/2, screenHeight/2, mPaint);
+    }
+
+    private void drawGameover(){
+        mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.ITALIC));
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(175);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mCanvas.drawText("GAME OVER! FINAL SCORE: " + mScore, screenWidth/2, screenHeight/2, mPaint);
     }
 
     private void finalizeCanvas() {

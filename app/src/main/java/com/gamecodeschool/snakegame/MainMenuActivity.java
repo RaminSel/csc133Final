@@ -2,6 +2,7 @@ package com.gamecodeschool.snakegame;
 
 import com.bumptech.glide.Glide;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,10 +22,6 @@ import android.widget.ImageView;
 
 public class MainMenuActivity extends Activity {
 
-    private Bitmap bitmap;
-    private Canvas canvas;
-    private Paint mPaint;
-
 
 
 
@@ -34,13 +31,12 @@ public class MainMenuActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.mainmenu);
 
-        // Load background image using Glide
-        ImageView backgroundImage = findViewById(R.id.mainMenu);
+        ImageView backgroundImage = findViewById(R.id.main_menu);
+
         Glide.with(this)
+                .asGif()
                 .load(R.drawable.mainmenu)
                 .into(backgroundImage);
-
-
 
 
 

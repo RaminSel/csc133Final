@@ -5,18 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/main_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@null"
+        android:src="@drawable/mainmenu"
+        android:visibility="visible"
+        android:contentDescription="main menu gif" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainMenuActivity">
 
 
-        <ImageView
-            android:id="@+id/mainMenu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/mainmenu" />
 
         <Button
             android:id="@+id/start_game_button"
