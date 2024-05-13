@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import android.view.KeyEvent;
@@ -26,7 +27,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
     private long mNextFrameTime;
     private volatile boolean mPlaying = false;
     private volatile boolean mpauseBtn = false;
-    private List<GameObject> gameObjects = new ArrayList<>();
+    private List<GameObject> gameObjects = Collections.synchronizedList(new ArrayList<>());
     private int mScore;
     private final int NUM_BLOCKS_WIDE = 25;
     private int mNumBlocksHigh;
@@ -202,9 +203,9 @@ public class SnakeGame extends SurfaceView implements Runnable{
                 playCrashSound();
                 soundManager.stopBackgroundMusic();
                 mPaused = true; // End the game
-                iterator.remove(); // Remove the collided object
-                return; // No need to check other objects
-            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
+                return;// No need to check other objects
+            }
+            else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
                 // The snake has eaten an apple
                 playEatSound();
                 mScore += 1;
@@ -241,7 +242,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
 
     public void draw() {
         if (prepareCanvas()) {
-            RenderGame renderer = new RenderGame(mCanvas, mPaint);
+            RenderGame renderer = new RenderGame(mCanvas, mPaint, gameObjects);
             mCanvas.drawBitmap(backgroundFrames[currentFrameIndex], 0, 0, mPaint);
             if (currentFrameIndex == backgroundFrames.length - 1) {
                 currentFrameIndex = 0;
@@ -249,7 +250,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
                 currentFrameIndex++;
             }
             renderer.drawScore(mScore);
-            renderer.drawGameObjects(gameObjects);
+            renderer.drawGameObjects();
             renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
             if(mpauseBtn && !mPaused) {
                 renderer.drawPauseBtnScreen();
