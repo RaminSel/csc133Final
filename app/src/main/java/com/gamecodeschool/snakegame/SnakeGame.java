@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import android.view.KeyEvent;
 
@@ -191,48 +192,44 @@ public class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private void checkCollisions() {
-
         boolean goldenAppleSpawned = false;
-        for (GameObject object : gameObjects) {
+        Iterator<GameObject> iterator = gameObjects.iterator();
+        while (iterator.hasNext()) {
+            GameObject object = iterator.next();
             if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
                     || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
                 // Collision with a wall, play crash sound and stop the game
                 playCrashSound();
                 soundManager.stopBackgroundMusic();
                 mPaused = true; // End the game
-                //soundManager.stopBackgroundMusic(); // Stop the background music
+                iterator.remove(); // Remove the collided object
                 return; // No need to check other objects
-            }
-            else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
+            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
                 // The snake has eaten an apple
                 playEatSound();
                 mScore += 1;
-                synchronized (gameObjects) {
-                    gameObjects.remove(object);
-                }
+                iterator.remove(); // Remove the eaten apple
                 mHandler.removeCallbacks(addApple);
                 mHandler.post(addApple);// Note: spawn now considers score
-            }else if (object instanceof goldenApple && mSnake.checkDinner(((goldenApple) object).getLocation())) {
+            } else if (object instanceof goldenApple && mSnake.checkDinner(((goldenApple) object).getLocation())) {
                 // The snake has eaten a golden apple
                 playEatSound();
-                mScore +=3;
-                // Despawn the golden apple
-                ((goldenApple) object).despawn();
-            }
-            else if (object instanceof goldenApple) {
+                mScore += 3;
+                iterator.remove(); // Remove the eaten golden apple
+                ((goldenApple) object).despawn(); // Despawn the golden apple
+            } else if (object instanceof goldenApple) {
                 goldenAppleSpawned = true;
-            }
-            else {
+            } else {
                 // No collision, update the game object normally
                 object.update();
             }
-
             if (!goldenAppleSpawned && Math.random() < 0.1) { // 10% chance
                 mGold.spawn();
             }
-
         }
+
     }
+
 
 
     private void checkSnakeDeath() {
