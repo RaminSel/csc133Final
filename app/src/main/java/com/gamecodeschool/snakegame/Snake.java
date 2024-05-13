@@ -307,7 +307,9 @@ class Snake extends GameObject implements Movable, Updateable {
                     break;
 
             }
-        } else {
+
+        }
+        else {
             // Rotate left
             switch (heading) {
                 case UP:
