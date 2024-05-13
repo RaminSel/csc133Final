@@ -1,9 +1,12 @@
 package com.gamecodeschool.snakegame;
 
+import static com.gamecodeschool.snakegame.R.*;
+
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
 import java.io.IOException;
@@ -14,6 +17,8 @@ public class ManageSound {
     private SoundPool soundPool;
     private int eatSoundId = -1;
     private int crashSoundId = -1;
+
+    private MediaPlayer backgroundMusic;
 
     public ManageSound(Context context) {
         initializeSoundPool(context);
@@ -48,6 +53,20 @@ public class ManageSound {
         }
     }
 
+
+    public void initBackgroundMusic(Context context) {
+        try {
+            AssetFileDescriptor afd = context.getAssets().openFd("music.ogg");
+            backgroundMusic = new MediaPlayer();
+            backgroundMusic.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            backgroundMusic.prepare();
+            backgroundMusic.setLooping(true);
+            backgroundMusic.setVolume(1.0f, 1.0f);
+        } catch (IOException e) {
+            Log.e("ManageSound", "Could not load background music", e);
+        }
+    }
+
     public void playEatSound() {
         soundPool.play(eatSoundId, 1, 1, 0, 0, 1);
     }
@@ -55,4 +74,22 @@ public class ManageSound {
     public void playCrashSound() {
         soundPool.play(crashSoundId, 1, 1, 0, 0, 1);
     }
+
+
+
+    public void playBackgroundMusic() {
+        if (backgroundMusic != null && !backgroundMusic.isPlaying()) {
+            backgroundMusic.start();
+        }
+    }
+
+    public void stopBackgroundMusic() {
+        if (backgroundMusic != null && backgroundMusic.isPlaying()) {
+            backgroundMusic.pause(); // Use pause() to be able to resume
+            backgroundMusic.seekTo(0); // Optional: Reset music to start
+        }
+    }
 }
+
+
+

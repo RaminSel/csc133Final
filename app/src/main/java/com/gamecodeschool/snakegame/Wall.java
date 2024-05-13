@@ -39,6 +39,7 @@ public class Wall extends GameObject {
         if (image != null) {
             canvas.drawBitmap(image, x, y, paint);
         }
+
     }
 
     public Point getLocation() {
@@ -47,7 +48,8 @@ public class Wall extends GameObject {
 
     @Override
     public void update() {
-        // This can remain empty if the wall doesn't need to change or move
+
+
     }
 
 
