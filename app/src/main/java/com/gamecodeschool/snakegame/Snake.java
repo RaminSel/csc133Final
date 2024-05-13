@@ -172,7 +172,7 @@ class Snake extends GameObject implements Movable, Updateable {
     /**
      * Moves the snake in the specified direction.
      *
-     * @param newHeading the new heading direction for the snake
+     *  the new heading direction for the snake
      */
     void move(Heading newHeading) {
         this.heading = newHeading;

@@ -8,8 +8,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 
-import java.util.Random;
-
 public class Shark extends GameObject implements Movable, Updateable, Drawing{
     private Point mMoveRange;
     private int mSegmentSize;
@@ -17,6 +15,8 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
     private Bitmap mBitmapHeadLeft;
     private Point location;
     private double sharkSpeed = 1.5;
+
+
     private enum Heading {
         RIGHT, LEFT
     }
@@ -72,14 +72,17 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
     }
     public void move(){
 
+        // Calculate distance to move based on speed and deltaTime
+        //float distanceToMove = (float) (sharkSpeed * deltaTimeInSeconds);
+
         // Move it appropriately
         switch (heading) {
             case RIGHT:
                 location.x += sharkSpeed;
-                if(location.x >= mMoveRange.x){
+                if (location.x >= mMoveRange.x) {
                     location.y++;
                     heading = Heading.LEFT;
-                    if(location.y >= mMoveRange.y){
+                    if (location.y >= mMoveRange.y) {
                         location.x = 0;
                         location.y = 0;
                     }
@@ -88,10 +91,10 @@ public class Shark extends GameObject implements Movable, Updateable, Drawing{
 
             case LEFT:
                 location.x -= sharkSpeed;
-                if(location.x < 0){
+                if (location.x < 0) {
                     location.y++;
                     heading = Heading.RIGHT;
-                    if(location.y >= mMoveRange.y){
+                    if (location.y >= mMoveRange.y) {
                         location.x = 0;
                         location.y = 0;
                     }
