@@ -1,87 +1,59 @@
 package com.gamecodeschool.snakegame;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.List;
-import android.graphics.Typeface;
 import android.view.KeyEvent;
 
-class SnakeGame extends SurfaceView implements Runnable{
+public class SnakeGame extends SurfaceView implements Runnable{
 
     private Thread mThread = null;
+    private boolean mRunning = true;
+    private boolean mPaused = true;
+    private boolean mPauseBtn = false;
     private long mNextFrameTime;
-    // Is the game currently playing and or paused?
     private volatile boolean mPlaying = false;
-    private volatile boolean mPaused = true;
-
     private volatile boolean mpauseBtn = false;
-
-
-    List<GameObject> gameObjects = new ArrayList<>();
+    private List<GameObject> gameObjects = new ArrayList<>();
+    private int mScore;
     private final int NUM_BLOCKS_WIDE = 25;
     private int mNumBlocksHigh;
-    private int mScore;
-
     private Handler mHandler = new Handler();
-
     private Canvas mCanvas;
     private SurfaceHolder mSurfaceHolder;
     private Paint mPaint;
-
     private Snake mSnake;
-    private Apple mApple;
-
     private Shark mShark;
-
-
-
     private ManageSound soundManager;
-
     private Bitmap[] backgroundFrames;
     private int currentFrameIndex = 0;
-
-
-    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+    private DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
     private int screenWidth = displayMetrics.widthPixels;
     private int screenHeight = displayMetrics.heightPixels;
-
-
     private int backgroundWidth = 3120;
     private int backgroundHeight = 1440;
-
-    // Calculate the scaling factors
     private float scaleX = (float) screenWidth / backgroundWidth;
     private float scaleY = (float) screenHeight / backgroundHeight;
-
-    // Choose the larger scaling factor to ensure the entire image covers the screen
     private float scaleFactor = Math.max(scaleX, scaleY);
-
-    // Calculate the scaled dimensions of the background image
     private int scaledWidth = (int) (backgroundWidth * scaleFactor);
     private int scaledHeight = (int) (backgroundHeight * scaleFactor);
     private goldenApple mGold;
 
+    public static int getBlockSize() {
+        return blockSize;
+    }
 
     private static int blockSize;
 
@@ -89,10 +61,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         soundManager.playEatSound();
     }
 
-
     public void playCrashSound() {
         soundManager.playCrashSound();
-
     }
 
     public SnakeGame(Context context, Point size) {
@@ -105,18 +75,17 @@ class SnakeGame extends SurfaceView implements Runnable{
         soundManager = new ManageSound(context);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        soundManager.initBackgroundMusic(context); // Initialize background music
+        soundManager.initBackgroundMusic(context);
     }
 
     private void initializeGameArea(Point size) {
-        int blockSize = size.x / NUM_BLOCKS_WIDE;
+        blockSize = size.x / NUM_BLOCKS_WIDE;
         mNumBlocksHigh = size.y / blockSize;
     }
 
     private void loadBackgroundFrames(Context context) {
         backgroundFrames = new Bitmap[40];
         for (int i = 0; i < backgroundFrames.length; i++) {
-            // Load frames lazily
             backgroundFrames[i] = loadFrame(context, i);
         }
     }
@@ -129,16 +98,12 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
-
         if (height > reqHeight || width > reqWidth) {
-            // Calculate ratios of height and width to requested height and width
             final int heightRatio = Math.round((float) height / (float) reqHeight);
             final int widthRatio = Math.round((float) width / (float) reqWidth);
-            // Choose the smallest ratio as inSampleSize value, which will be a power of 2
             inSampleSize = Math.min(heightRatio, widthRatio);
         }
         return inSampleSize;
@@ -146,15 +111,15 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     private void initializeGameObjects(Context context, Point size) {
         blockSize = size.x / NUM_BLOCKS_WIDE;
-        mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mGold = new goldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mShark = new Shark(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
 
-        gameObjects.add(mSnake);
-        gameObjects.add(mApple);
-        gameObjects.add(mGold);
-        gameObjects.add(mShark);
+        synchronized (gameObjects) {
+            gameObjects.add(mSnake);
+            gameObjects.add(mGold);
+            gameObjects.add(mShark);
+        }
     }
 
     private void initializeDrawingObjects() {
@@ -162,123 +127,107 @@ class SnakeGame extends SurfaceView implements Runnable{
         mPaint = new Paint();
     }
 
-
-
     public void newGame() {
-        soundManager.playBackgroundMusic(); // Ensure the background music starts
-
+        soundManager.playBackgroundMusic();
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
-        // Get the apple ready for dinner
-        mApple.spawn();
-
         mGold.spawn();
-        //Reset shark location
         mShark.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
-        // Reset the mScore
         mScore = 0;
-        // Setup mNextFrameTime so an update can triggered
         mNextFrameTime = System.currentTimeMillis();
-
         mHandler.postDelayed(addNewWall, 10000);
-
+        mHandler.post(addApple);
         synchronized (gameObjects) {
             gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
+            gameObjects.removeIf(gameObject -> gameObject instanceof Apple);
         }
-
-        // Reset wall spawning mechanism
         mHandler.removeCallbacks(addNewWall);
         mHandler.postDelayed(addNewWall, 10000);
+        mHandler.removeCallbacks(addApple);
+        mHandler.post(addApple);
     }
 
     @Override
     public void run() {
+        long lastFrameTime = System.currentTimeMillis();
         while (mPlaying) {
-            if(!mPaused && !mpauseBtn) {
-                // Update 10 times a second
+            long currentTime = System.currentTimeMillis();
+            long deltaTime = currentTime - lastFrameTime;
+            lastFrameTime = currentTime;
+
+            if (!mPaused && !mpauseBtn) {
                 if (updateRequired()) {
                     update();
                 }
             }
             draw();
+
+            long sleepTime = 1000 / 10 - deltaTime;
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    // Check to see if it is time for an update
     public boolean updateRequired() {
-
         final long TARGET_FPS = 10;
         final long MILLIS_PER_SECOND = 1000;
-
-        // Are we due to update the frame
         if(mNextFrameTime <= System.currentTimeMillis()){
-            // Tenth of a second has passed
-
-            mNextFrameTime =System.currentTimeMillis()
-                    + MILLIS_PER_SECOND / TARGET_FPS;
-
+            mNextFrameTime =System.currentTimeMillis() + MILLIS_PER_SECOND / TARGET_FPS;
             return true;
         }
-
         return false;
     }
 
+    private void update() {
+        //float deltaTimeInSeconds = deltaTime / 1000.0f; // Convert milliseconds to seconds
 
-
-
-    public void update() {
-        mSnake.move(); // Move the snake first
+        mSnake.move();
         mShark.move();
         checkCollisions();
         checkSnakeDeath();
     }
 
     private void checkCollisions() {
-
         boolean goldenAppleSpawned = false;
-        for (GameObject object : gameObjects) {
+        Iterator<GameObject> iterator = gameObjects.iterator();
+        while (iterator.hasNext()) {
+            GameObject object = iterator.next();
             if (object instanceof Wall && mSnake.checkCollision(((Wall) object).getLocation())
-            || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
+                    || object instanceof Shark && mSnake.checkCollision(((Shark) object).getLocation())) {
                 // Collision with a wall, play crash sound and stop the game
                 playCrashSound();
                 soundManager.stopBackgroundMusic();
                 mPaused = true; // End the game
-                //soundManager.stopBackgroundMusic(); // Stop the background music
+                iterator.remove(); // Remove the collided object
                 return; // No need to check other objects
-            }
-            else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
+            } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
                 // The snake has eaten an apple
                 playEatSound();
                 mScore += 1;
-                ((Apple)object).spawn(); // Note: spawn now considers score
-
-            }else if (object instanceof goldenApple && mSnake.checkDinner(((goldenApple) object).getLocation())) {
+                iterator.remove(); // Remove the eaten apple
+                mHandler.removeCallbacks(addApple);
+                mHandler.post(addApple);// Note: spawn now considers score
+            } else if (object instanceof goldenApple && mSnake.checkDinner(((goldenApple) object).getLocation())) {
                 // The snake has eaten a golden apple
                 playEatSound();
-                mScore +=3;
-                // Despawn the golden apple
-                ((goldenApple) object).despawn();
-            }
-            else if (object instanceof goldenApple) {
+                mScore += 3;
+                iterator.remove(); // Remove the eaten golden apple
+                ((goldenApple) object).despawn(); // Despawn the golden apple
+            } else if (object instanceof goldenApple) {
                 goldenAppleSpawned = true;
-            }
-            else {
+            } else {
                 // No collision, update the game object normally
                 object.update();
             }
-
-            if (!goldenAppleSpawned && Math.random() < 0.05) { // 10% chance
+            if (!goldenAppleSpawned && Math.random() < 0.1) { // 10% chance
                 mGold.spawn();
             }
-
-            // Check if golden apple and regular apple are on the same location
-            if (mGold.getLocation().equals(mApple.getLocation())) {
-                // Respawn golden apple
-                mGold.despawn();
-
-
-            }
-
         }
+
     }
 
 
@@ -290,20 +239,27 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     }
 
-    // Do all the drawing
     public void draw() {
         if (prepareCanvas()) {
-            drawGameElements();
+            RenderGame renderer = new RenderGame(mCanvas, mPaint);
+            mCanvas.drawBitmap(backgroundFrames[currentFrameIndex], 0, 0, mPaint);
+            if (currentFrameIndex == backgroundFrames.length - 1) {
+                currentFrameIndex = 0;
+            } else {
+                currentFrameIndex++;
+            }
+            renderer.drawScore(mScore);
+            renderer.drawGameObjects(gameObjects);
+            renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
             if(mpauseBtn && !mPaused) {
-                drawPauseBtnScreen();
+                renderer.drawPauseBtnScreen();
             }
             if(mPaused){
-                drawPauseScreen();
+                renderer.drawPauseScreen();
             }
             finalizeCanvas();
         }
     }
-
 
     private boolean prepareCanvas() {
         if (mSurfaceHolder.getSurface().isValid()) {
@@ -313,62 +269,9 @@ class SnakeGame extends SurfaceView implements Runnable{
         return false;
     }
 
-    private void drawGameElements() {
-        RenderGame renderer = new RenderGame(mCanvas, mPaint);
-        mCanvas.drawBitmap(backgroundFrames[currentFrameIndex], 0, 0, mPaint);
-        if (currentFrameIndex == backgroundFrames.length - 1) {
-            currentFrameIndex = 0;
-        } else {
-            currentFrameIndex++;
-        }
-        renderer.drawScore(mScore);
-
-        synchronized (gameObjects) {
-            for(GameObject gameObject : gameObjects) {
-                gameObject.draw(mCanvas, mPaint);
-            }
-        }
-        renderer.drawGameObjects(gameObjects);
-        for(GameObject gameObject : gameObjects) {
-            gameObject.draw(mCanvas, mPaint);
-        }
-
-        mApple.draw(mCanvas, mPaint);
-        mGold.draw(mCanvas,mPaint);
-        mSnake.draw(mCanvas, mPaint);
-        mShark.draw(mCanvas, mPaint);
-        renderer.drawCustomText("Ramin, Parsa, Julian, Tyler", 2900, 120, Color.WHITE, 75, Paint.Align.RIGHT);
-    }
-
-    private void drawPauseScreen() {
-        mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.ITALIC));
-        mPaint.setColor(Color.argb(255, 255, 255, 255));
-        mPaint.setTextSize(175);
-        mPaint.setTextAlign(Paint.Align.CENTER);
-        mCanvas.drawText(getResources().getString(R.string.tap_to_play), screenWidth/2, screenHeight/2, mPaint);
-    }
-
-    private void drawPauseBtnScreen(){
-        mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.ITALIC));
-        mPaint.setColor(Color.argb(255, 255, 255, 255));
-        mPaint.setTextSize(175);
-        mPaint.setTextAlign(Paint.Align.CENTER);
-        mCanvas.drawText("Paused!", screenWidth/2, screenHeight/2, mPaint);
-    }
-
-    private void drawGameover(){
-        mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.ITALIC));
-        mPaint.setColor(Color.argb(255, 255, 255, 255));
-        mPaint.setTextSize(175);
-        mPaint.setTextAlign(Paint.Align.CENTER);
-        mCanvas.drawText("GAME OVER! FINAL SCORE: " + mScore, screenWidth/2, screenHeight/2, mPaint);
-    }
-
     private void finalizeCanvas() {
-
         mSurfaceHolder.unlockCanvasAndPost(mCanvas);
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
@@ -379,8 +282,6 @@ class SnakeGame extends SurfaceView implements Runnable{
                     newGame();
                     return true;
                 }
-
-                // Let the Snake class handle the input
                 mSnake.switchHeading(motionEvent);
                 break;
 
@@ -390,18 +291,30 @@ class SnakeGame extends SurfaceView implements Runnable{
         return true;
     }
 
-    // Inside your SnakeGame class
+    private Runnable addApple = new Runnable() {
+        @Override
+        public void run() {
+            if (!mPaused) {
+                int blockSize = getWidth() / NUM_BLOCKS_WIDE;
+                Apple apple = new Apple(getContext(), new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+                synchronized (gameObjects) {
+                    gameObjects.add(apple);
+                }
+            }
+            // Post this Runnable again after a certain delay to add apples at regular intervals
+            //mHandler.postDelayed(this, 10000); // Change the delay as needed
+        }
+    };
+
     private Runnable addNewWall = new Runnable() {
         @Override
         public void run() {
             if(!mPaused) {
-
                 int blockSize = getWidth() / NUM_BLOCKS_WIDE;
                 Wall wall = new Wall(getContext(), new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
                 synchronized (gameObjects) {
                     gameObjects.add(wall);
                 }
-                // Reschedule the runnable after 10 seconds
                 mHandler.postDelayed(this, 10000);
             }
         }
@@ -435,7 +348,7 @@ class SnakeGame extends SurfaceView implements Runnable{
                 }
                 return true;
             case KeyEvent.KEYCODE_SPACE:
-                togForPause(); // Pause the Game
+                togForPause();
                 return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -443,22 +356,19 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     public void togForPause() {
         mpauseBtn = !mpauseBtn;
-
         if (!mpauseBtn) {
             mNextFrameTime = System.currentTimeMillis();
         }
-
     }
 
     public boolean ismPaused() {
-
         return mpauseBtn;
     }
 
-    // Stop the thread
     public void pause() {
-        soundManager.stopBackgroundMusic(); // Stop music when the game is paused
+        soundManager.stopBackgroundMusic();
         mHandler.removeCallbacks(addNewWall);
+        mHandler.removeCallbacks(addApple);
         mPlaying = false;
         try {
             mThread.join();
@@ -467,10 +377,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
     }
 
-    // Start the thread
     public void resume() {
-        soundManager.playBackgroundMusic(); // Play music when game resumes
+        soundManager.playBackgroundMusic();
         mHandler.post(addNewWall);
+        mHandler.post(addApple);
         mPlaying = true;
         mThread = new Thread(this);
         mThread.start();
@@ -479,5 +389,4 @@ class SnakeGame extends SurfaceView implements Runnable{
     public Snake getSnake() {
         return mSnake;
     }
-
 }

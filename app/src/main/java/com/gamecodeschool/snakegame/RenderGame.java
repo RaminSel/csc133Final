@@ -1,14 +1,14 @@
 package com.gamecodeschool.snakegame;
 
-
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 
+import java.util.Iterator;
+import java.util.List;
 
 public class RenderGame {
     private Canvas canvas;
@@ -21,14 +21,15 @@ public class RenderGame {
     private static final int SCORE_Y_POSITION = 120;
 
     public RenderGame(Canvas canvas, Paint paint) {
-
         this.canvas = canvas;
         this.paint = paint;
-        this.textPaint = new Paint(paint);
-        textPaint.setTypeface(Typeface.create(textPaint.getTypeface(), Typeface.ITALIC));
 
+        // Initialize text paint with typeface and other properties
+        textPaint = new Paint();
+        textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
+        textPaint.setTextSize(SCORE_TEXT_SIZE);
+        textPaint.setColor(Color.RED);
     }
-
 
     public void drawScore(int score) {
         textPaint.setColor(Color.RED);
@@ -37,16 +38,37 @@ public class RenderGame {
     }
 
     public void drawGameObjects(List<GameObject> gameObjects) {
-        List<GameObject> copy = new ArrayList<>(gameObjects); // Create a copy of the list
-        for(GameObject gameObject : copy) {
+        // Draw game objects directly to the main canvas
+        Iterator<GameObject> iterator = gameObjects.iterator();
+        while (iterator.hasNext()) {
+            GameObject gameObject = iterator.next();
             gameObject.draw(canvas, paint);
         }
     }
 
+    public void drawPauseScreen() {
+        textPaint.setTypeface(Typeface.create(textPaint.getTypeface(), Typeface.ITALIC));
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(175);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("Tap to Play", canvas.getWidth() / 2, canvas.getHeight() / 2, textPaint);
+    }
+
+    public void drawPauseBtnScreen() {
+        textPaint.setTypeface(Typeface.create(textPaint.getTypeface(), Typeface.ITALIC));
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(175);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("Paused!", canvas.getWidth() / 2, canvas.getHeight() / 2, textPaint);
+    }
+
     public void drawCustomText(String text, int x, int y, int color, int textSize, Paint.Align align) {
+        Paint textPaint = new Paint();
         textPaint.setColor(color);
         textPaint.setTextSize(textSize);
         textPaint.setTextAlign(align);
+
+        // Draw custom text directly to the main canvas
         canvas.drawText(text, x, y, textPaint);
     }
 }
