@@ -20,13 +20,15 @@ import android.view.KeyEvent;
 public class SnakeGame extends SurfaceView implements Runnable{
 
     private Thread mThread = null;
-    private boolean mRunning = true;
     private boolean mPaused = true;
-    private boolean mPauseBtn = false;
+
     private long mNextFrameTime;
     private volatile boolean mPlaying = false;
     private volatile boolean mpauseBtn = false;
     private List<GameObject> gameObjects = new ArrayList<>();
+
+
+
     private int mScore;
     private final int NUM_BLOCKS_WIDE = 25;
     private int mNumBlocksHigh;
@@ -50,6 +52,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
     private int scaledWidth = (int) (backgroundWidth * scaleFactor);
     private int scaledHeight = (int) (backgroundHeight * scaleFactor);
     private goldenApple mGold;
+    private volatile boolean mGameOver = false;
 
     public static int getBlockSize() {
         return blockSize;
@@ -63,6 +66,10 @@ public class SnakeGame extends SurfaceView implements Runnable{
 
     public void playCrashSound() {
         soundManager.playCrashSound();
+    }
+
+    public int getmScore() {
+        return mScore;
     }
 
     public SnakeGame(Context context, Point size) {
@@ -130,20 +137,23 @@ public class SnakeGame extends SurfaceView implements Runnable{
     public void newGame() {
         soundManager.playBackgroundMusic();
         mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
-        mGold.spawn();
         mShark.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
         mScore = 0;
         mNextFrameTime = System.currentTimeMillis();
         mHandler.postDelayed(addNewWall, 10000);
         mHandler.post(addApple);
+        mHandler.postDelayed(addGold,8000);
         synchronized (gameObjects) {
             gameObjects.removeIf(gameObject -> gameObject instanceof Wall);
             gameObjects.removeIf(gameObject -> gameObject instanceof Apple);
+            gameObjects.removeIf(gameObject -> gameObject instanceof goldenApple);
         }
         mHandler.removeCallbacks(addNewWall);
         mHandler.postDelayed(addNewWall, 10000);
         mHandler.removeCallbacks(addApple);
         mHandler.post(addApple);
+        mHandler.removeCallbacks(addGold);
+        mHandler.postDelayed(addGold,8000);
     }
 
     @Override
@@ -154,7 +164,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
             long deltaTime = currentTime - lastFrameTime;
             lastFrameTime = currentTime;
 
-            if (!mPaused && !mpauseBtn) {
+            if (!mPaused && !mpauseBtn && !mGameOver) {
                 if (updateRequired()) {
                     update();
                 }
@@ -192,7 +202,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
     }
 
     private void checkCollisions() {
-        boolean goldenAppleSpawned = false;
+
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {
             GameObject object = iterator.next();
@@ -201,7 +211,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
                 // Collision with a wall, play crash sound and stop the game
                 playCrashSound();
                 soundManager.stopBackgroundMusic();
-                mPaused = true; // End the game
+                mGameOver = true; // End the game
                 iterator.remove(); // Remove the collided object
                 return; // No need to check other objects
             } else if (object instanceof Apple && mSnake.checkDinner(((Apple) object).getLocation())) {
@@ -215,17 +225,17 @@ public class SnakeGame extends SurfaceView implements Runnable{
                 // The snake has eaten a golden apple
                 playEatSound();
                 mScore += 3;
-                iterator.remove(); // Remove the eaten golden apple
-                ((goldenApple) object).despawn(); // Despawn the golden apple
-            } else if (object instanceof goldenApple) {
-                goldenAppleSpawned = true;
+
+                    iterator.remove();
+                    mHandler.removeCallbacks(addGold);
+                    mHandler.postDelayed(addGold,13000);
+
+
             } else {
                 // No collision, update the game object normally
                 object.update();
             }
-            if (!goldenAppleSpawned && Math.random() < 0.1) { // 10% chance
-                mGold.spawn();
-            }
+
         }
 
     }
@@ -235,7 +245,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
     private void checkSnakeDeath() {
         if (mSnake.detectDeath()) {
             playCrashSound();
-            mPaused = true;
+            mGameOver = true;
         }
     }
 
@@ -257,6 +267,9 @@ public class SnakeGame extends SurfaceView implements Runnable{
             if(mPaused){
                 renderer.drawPauseScreen();
             }
+            if(mGameOver && !mPaused){
+                renderer.drawGameOver();
+            }
             finalizeCanvas();
         }
     }
@@ -277,14 +290,14 @@ public class SnakeGame extends SurfaceView implements Runnable{
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
-                if (mPaused) {
+                if (mPaused || mGameOver) {
                     mPaused = false;
+                    mGameOver = false; // Set game over flag to false
                     newGame();
                     return true;
                 }
                 mSnake.switchHeading(motionEvent);
                 break;
-
             default:
                 break;
         }
@@ -294,7 +307,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
     private Runnable addApple = new Runnable() {
         @Override
         public void run() {
-            if (!mPaused) {
+            if (!mPaused && !mGameOver) {
                 int blockSize = getWidth() / NUM_BLOCKS_WIDE;
                 Apple apple = new Apple(getContext(), new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
                 synchronized (gameObjects) {
@@ -306,10 +319,25 @@ public class SnakeGame extends SurfaceView implements Runnable{
         }
     };
 
+    private Runnable addGold = new Runnable() {
+        @Override
+        public void run() {
+            if (!mPaused && !mGameOver) {
+                int blockSize = getWidth() / NUM_BLOCKS_WIDE;
+                goldenApple golden = new goldenApple(getContext(), new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
+                synchronized (gameObjects) {
+                    gameObjects.add(golden);
+                }
+            }
+            // Post this Runnable again after a certain delay to add apples at regular intervals
+            //mHandler.postDelayed(this, 10000); // Change the delay as needed
+        }
+    };
+
     private Runnable addNewWall = new Runnable() {
         @Override
         public void run() {
-            if(!mPaused) {
+            if(!mPaused && !mGameOver) {
                 int blockSize = getWidth() / NUM_BLOCKS_WIDE;
                 Wall wall = new Wall(getContext(), new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
                 synchronized (gameObjects) {
@@ -320,39 +348,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
         }
     };
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_W:
-            case KeyEvent.KEYCODE_DPAD_UP:
-                if (!mPaused) {
-                    mSnake.move(Snake.Heading.UP);
-                }
-                return true;
-            case KeyEvent.KEYCODE_S:
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                if (!mPaused) {
-                    mSnake.move(Snake.Heading.DOWN);
-                }
-                return true;
-            case KeyEvent.KEYCODE_A:
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (!mPaused) {
-                    mSnake.move(Snake.Heading.LEFT);
-                }
-                return true;
-            case KeyEvent.KEYCODE_D:
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (!mPaused) {
-                    mSnake.move(Snake.Heading.RIGHT);
-                }
-                return true;
-            case KeyEvent.KEYCODE_SPACE:
-                togForPause();
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+
 
     public void togForPause() {
         mpauseBtn = !mpauseBtn;
