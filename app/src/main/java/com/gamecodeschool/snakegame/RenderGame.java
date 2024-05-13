@@ -42,10 +42,12 @@ public class RenderGame {
 
     public void drawGameObjects() {
         // Draw game objects directly to the main canvas
-        Iterator<GameObject> iterator = gameObjects.iterator();
-        while (iterator.hasNext()) {
-            GameObject gameObject = iterator.next();
-            gameObject.draw(canvas, paint);
+        synchronized (gameObjects) {
+            Iterator<GameObject> iterator = gameObjects.iterator();
+            while (iterator.hasNext()) {
+                GameObject gameObject = iterator.next();
+                gameObject.draw(canvas, paint);
+            }
         }
     }
 

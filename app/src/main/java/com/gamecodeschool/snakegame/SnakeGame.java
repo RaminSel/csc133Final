@@ -116,13 +116,11 @@ public class SnakeGame extends SurfaceView implements Runnable{
 
     private void initializeGameObjects(Context context, Point size) {
         blockSize = size.x / NUM_BLOCKS_WIDE;
-        mGold = new goldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mShark = new Shark(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
 
         synchronized (gameObjects) {
             gameObjects.add(mSnake);
-            gameObjects.add(mGold);
             gameObjects.add(mShark);
         }
     }
