@@ -245,7 +245,7 @@ public class SnakeGame extends SurfaceView implements Runnable{
     public void draw() {
         if (prepareCanvas()) {
             RenderGame renderer = new RenderGame(mCanvas, mPaint);
-            mCanvas.drawBitmap(backgroundFrames[0], 0, 0, mPaint);
+            mCanvas.drawBitmap(backgroundFrames[currentFrameIndex], 0, 0, mPaint);
             if (currentFrameIndex == backgroundFrames.length - 1) {
                 currentFrameIndex = 0;
             } else {
