@@ -17,25 +17,40 @@ public class goldenApple extends GameObject implements Updateable{
     private Point location = new Point();
     private Point mSpawnRange;
 
+    private int x,y;
+
+    private int mBlockSize;
+
     private int mSize;
     private Bitmap mBitmapGold;
 
 
-    public goldenApple (Context context, Point sr, int s){
-        mSpawnRange = sr;
-        mSize = s;
-        location.x = -40;
+    public goldenApple(Context context, Point spawnRange, int blockSize) {
+        // Save the passed-in parameters for later use
+        // Correctly set the block size
+        mBlockSize = blockSize;
 
-        // Load the image to the bitmap
+        // Save the passed-in parameters for later use
+        mSpawnRange = spawnRange;
+
+        // Initialize the position of the wall randomly
+        x = (int) (Math.random() * mSpawnRange.x) * mBlockSize;
+        y = (int) (Math.random() * mSpawnRange.y) * mBlockSize;
+        x -= 50;
+        y -= 50;
+
+
         mBitmapGold = BitmapFactory.decodeResource(context.getResources(), R.drawable.goldapple);
 
-        // Resize the bitmap to the specified size
-        resizeBitmap(mSize);
-
+        mBitmapGold= Bitmap.createScaledBitmap(mBitmapGold, mBlockSize, mBlockSize, false);
     }
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        canvas.drawBitmap(mBitmapGold, location.x * mSize, location.y * mSize, paint);
+        // Draw the image at its position
+        if (mBitmapGold != null) {
+            canvas.drawBitmap(mBitmapGold, x, y, paint);
+        }
+
     }
 
     public void spawn() {
@@ -52,27 +67,16 @@ public class goldenApple extends GameObject implements Updateable{
         }
     }
 
-    public void spawn(int score) {
-        spawn();
-        if (score > SCORE_THRESHOLD) {
-            int newSize = mSize - SIZE_DECREMENT;
-            mSize = Math.max(newSize, MIN_SIZE);
-            resizeBitmap(mSize);
-        }
-    }
 
 
     public Point getLocation() {
-        return location;
+        return new Point(x / mBlockSize, y / mBlockSize); // Ensure coordinates align with game logic
     }
 
-    private void resizeBitmap(int size) {
-        mBitmapGold = Bitmap.createScaledBitmap(mBitmapGold, size, size, false);
-    }
     public void despawn() {
         // Reset the location of the golden apple to make it disappear
-        location.x = -20;
-        location.y = -20;
+        location.x = -60;
+        location.y = -60;
     }
 
 
