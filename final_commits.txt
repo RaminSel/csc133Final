@@ -1,28 +1,96 @@
-6306a8b - RaminSel, 12 minutes ago : Fixed color schemes
-42398d4 - 4runner99, 34 minutes ago : merging into main with julian
-74757d4 - 4runner99, 42 minutes ago : push stuff
-936bf42 - RaminSel, 6 hours ago : Fixed some color schemes within the and bugs regarding fish
-c69eb3c - 4runner99, 3 days ago : Merge remote-tracking branch 'origin/Parsa' into Julian
-17b60eb - RaminSel, 3 days ago : Merge pull request #6 from RaminSel/Parsa
-fadf933 - ParsaBayatt, 3 days ago : Added keyboard functionality to SnakeGame.java
-35759d5 - ParsaBayatt, 3 days ago : Added Keyboard functionality to SnakeGame.java
-0581bb5 - 4runner99, 5 days ago : stuff
-31c7fa9 - 4runner99, 5 days ago : pressing pause now shows "Paused!"
-9af38f9 - 4runner99, 5 days ago : options activity added needs stuff.
-1429540 - 4runner99, 5 days ago : random main menu picture lol
-fe94ec8 - 4runner99, 5 days ago : android manifest file edited to show main menu first
-d1a2f1a - 4runner99, 5 days ago : edited activity_main.xml
-7614b37 - 4runner99, 5 days ago : added dependence for glide
-5733614 - 4runner99, 5 days ago : main menu added
-a230624 - tjudtmartine, 6 days ago : Merge pull request #4 from RaminSel/Tyler
-6da1a3f - tjudtmartine, 6 days ago : Fixed concurrent modification error in render game
-945bcf4 - tjudtmartine, 6 days ago : Merge pull request #3 from RaminSel/Tyler
-6f5bf37 - tjudtmartine, 6 days ago : New game object: shark
-45a92d5 - RaminSel, 7 days ago : Merge pull request #2 from RaminSel/Julian
-e47351a - 4runner99, 7 days ago : added method to load animated background, working now.
-d584000 - 4runner99, 7 days ago : gold apple graphic
-39981f2 - 4runner99, 7 days ago : frames added for animated background
-738ce3a - 4runner99, 7 days ago : new fish head graphic replacing snake head
-8e169a2 - RaminSel, 8 days ago : Merge pull request #1 from RaminSel/Ramin
-9a680c3 - RaminSel, 9 days ago : collision with brick is now working properly
-764517b - RaminSel, 9 days ago : Added the first edition of the wall within the game. Still needs progress
+affde84 - RaminSel, 3 hours ago : Merge pull request #12 from RaminSel/Parsa
+e9bb224 - RaminSel, 4 hours ago : Merge pull request #11 from RaminSel/Parsa_New
+8545051 - ParsaBayatt, 4 hours ago : Implementing the Go Back Button
+39b2719 - ParsaBayatt, 4 hours ago : Create button_background.xml
+11410e2 - ParsaBayatt, 4 hours ago : Create activity_options.xml for Button Activities and Design
+3cf2909 - ParsaBayatt, 4 hours ago : Update AndroidManifest.xml for Options Button
+2e6ac22 - ParsaBayatt, 4 hours ago : Update AndroidManifest.xml for Options Button
+c3511d1 - ParsaBayatt, 4 hours ago : Update OptionsActivity.java
+38feeef - tjudtmartine, 4 hours ago : Removed dead code and changed shark speed
+fdb34b9 - tjudtmartine, 6 hours ago : Merge pull request #10 from RaminSel/Tyler
+5565ff9 - tjudtmartine, 6 hours ago : Merge branch 'Julian' into Tyler
+57f88d5 - tjudtmartine, 6 hours ago : Fixed concurentmodification error in rendergame and fixed issue with shark disappearing after collision
+bf78bf4 - 4runner99, 15 hours ago : stuff
+4734e9e - 4runner99, 15 hours ago : various changes to goldapple object and inlcuded game over screen
+bde6439 - 4runner99, 15 hours ago : added gameover screen method
+041fce0 - 4runner99, 15 hours ago : updated golden apple class
+3eabdb3 - 4runner99, 15 hours ago : new main menu music
+3cfaa02 - 4runner99, 15 hours ago : new main menu music
+0dc81df - 4runner99, 21 hours ago : Merge remote-tracking branch 'origin/Tyler' into Julian
+7308fba - 4runner99, 21 hours ago : ffdsf
+6a9d45e - 4runner99, 21 hours ago : Merge remote-tracking branch 'origin/Julian' into Julian
+26788b2 - 4runner99, 21 hours ago : Merge branch 'Tyler' into Julian
+ ESCOD
+affde84 - RaminSel, 3 hours ago : Merge pull request #12 from RaminSel/Parsa
+e9bb224 - RaminSel, 4 hours ago : Merge pull request #11 from RaminSel/Parsa_New
+8545051 - ParsaBayatt, 4 hours ago : Implementing the Go Back Button
+39b2719 - ParsaBayatt, 4 hours ago : Create button_background.xml
+11410e2 - ParsaBayatt, 4 hours ago : Create activity_options.xml for Button Activities and Design
+3cf2909 - ParsaBayatt, 4 hours ago : Update AndroidManifest.xml for Options Button
+2e6ac22 - ParsaBayatt, 4 hours ago : Update AndroidManifest.xml for Options Button
+c3511d1 - ParsaBayatt, 4 hours ago : Update OptionsActivity.java
+38feeef - tjudtmartine, 4 hours ago : Removed dead code and changed shark speed
+fdb34b9 - tjudtmartine, 6 hours ago : Merge pull request #10 from RaminSel/Tyler
+5565ff9 - tjudtmartine, 6 hours ago : Merge branch 'Julian' into Tyler
+57f88d5 - tjudtmartine, 6 hours ago : Fixed concurentmodification error in rendergame and fixed issue with shark disappearing after collision
+bf78bf4 - 4runner99, 15 hours ago : stuff
+4734e9e - 4runner99, 15 hours ago : various changes to goldapple object and inlcuded game over screen
+bde6439 - 4runner99, 15 hours ago : added gameover screen method
+041fce0 - 4runner99, 15 hours ago : updated golden apple class
+3eabdb3 - 4runner99, 15 hours ago : new main menu music
+3cfaa02 - 4runner99, 15 hours ago : new main menu music
+0dc81df - 4runner99, 21 hours ago : Merge remote-tracking branch 'origin/Tyler' into Julian
+7308fba - 4runner99, 21 hours ago : ffdsf
+6a9d45e - 4runner99, 21 hours ago : Merge remote-tracking branch 'origin/Julian' into Julian
+26788b2 - 4runner99, 21 hours ago : Merge branch 'Tyler' into Julian
+bde367f - tjudtmartine, 21 hours ago : Merge pull request #9 from RaminSel/Tyler
+d0710af - tjudtmartine, 23 hours ago : Forgot to fix currentframeindex
+94665ef - tjudtmartine, 23 hours ago : Forgot to fix currentframeindex
+081180b - tjudtmartine, 23 hours ago : Refactored rendergame and added runnable to apple
+61c542d - RaminSel, 3 days ago : Fixed score not showing up
+180b02b - 4runner99, 3 days ago : deleted unused files
+b0a2e58 - 4runner99, 3 days ago : Merge remote-tracking branch 'origin/main' into Julian
+41b8bf3 - 4runner99, 3 days ago : pushing stuff
+ac1cd6f - tjudtmartine, 3 days ago : Merge pull request #8 from RaminSel/Tyler
+54405ff - tjudtmartine, 3 days ago : Fixed concurrent modification error in snake game rendering
+f0849c4 - 4runner99, 3 days ago : main menu picture
+ab0af05 - RaminSel, 4 days ago : Small updates and refactoring
+c07bd50 - 4runner99, 7 days ago : new body
+93f1646 - 4runner99, 7 days ago : Merge remote-tracking branch 'origin/Julian'
+b2fcb49 - RaminSel, 7 days ago : Merge pull request #7 from RaminSel/Ramin
+74dab85 - RaminSel, 7 days ago : Added sound to be played throughout the game. Until it crashes to shark or wall. Fixed some bugs as well
+d13e649 - RaminSel, 8 days ago : Debugged code and fixed issues with not registerning objects at times
+610fc8f - 4runner99, 9 days ago : golden apple
+d9b2fb5 - 4runner99, 9 days ago : added golden apple functionality
+5a14f9d - 4runner99, 9 days ago : random commit
+fd417d5 - 4runner99, 9 days ago : updated apple and gold apple
+c037622 - 4runner99, 2 weeks ago : new apple graphic, its a worm lol
+f332e91 - 4runner99, 2 weeks ago : made some optimizations to load background frames
+6306a8b - RaminSel, 2 weeks ago : Fixed color schemes
+42398d4 - 4runner99, 2 weeks ago : merging into main with julian
+74757d4 - 4runner99, 2 weeks ago : push stuff
+936bf42 - RaminSel, 2 weeks ago : Fixed some color schemes within the and bugs regarding fish
+c69eb3c - 4runner99, 3 weeks ago : Merge remote-tracking branch 'origin/Parsa' into Julian
+17b60eb - RaminSel, 3 weeks ago : Merge pull request #6 from RaminSel/Parsa
+fadf933 - ParsaBayatt, 3 weeks ago : Added keyboard functionality to SnakeGame.java
+35759d5 - ParsaBayatt, 3 weeks ago : Added Keyboard functionality to SnakeGame.java
+0581bb5 - 4runner99, 3 weeks ago : stuff
+31c7fa9 - 4runner99, 3 weeks ago : pressing pause now shows "Paused!"
+9af38f9 - 4runner99, 3 weeks ago : options activity added needs stuff.
+1429540 - 4runner99, 3 weeks ago : random main menu picture lol
+fe94ec8 - 4runner99, 3 weeks ago : android manifest file edited to show main menu first
+d1a2f1a - 4runner99, 3 weeks ago : edited activity_main.xml
+7614b37 - 4runner99, 3 weeks ago : added dependence for glide
+5733614 - 4runner99, 3 weeks ago : main menu added
+a230624 - tjudtmartine, 3 weeks ago : Merge pull request #4 from RaminSel/Tyler
+6da1a3f - tjudtmartine, 3 weeks ago : Fixed concurrent modification error in render game
+945bcf4 - tjudtmartine, 3 weeks ago : Merge pull request #3 from RaminSel/Tyler
+6f5bf37 - tjudtmartine, 3 weeks ago : New game object: shark
+45a92d5 - RaminSel, 3 weeks ago : Merge pull request #2 from RaminSel/Julian
+e47351a - 4runner99, 3 weeks ago : added method to load animated background, working now.
+d584000 - 4runner99, 3 weeks ago : gold apple graphic
+39981f2 - 4runner99, 3 weeks ago : frames added for animated background
+738ce3a - 4runner99, 3 weeks ago : new fish head graphic replacing snake head
+8e169a2 - RaminSel, 3 weeks ago : Merge pull request #1 from RaminSel/Ramin
+9a680c3 - RaminSel, 3 weeks ago : collision with brick is now working properly
+764517b - RaminSel, 3 weeks ago : Added the first edition of the wall within the game. Still needs progress
